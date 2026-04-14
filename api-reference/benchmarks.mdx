@@ -1,0 +1,171 @@
+---
+title: "Benchmarks"
+description: "DeFi benchmark APY rates for USD and ETH strategies, including historical time-series. PRO tier required."
+---
+
+<Info>Benchmark endpoints require a **PRO API key**.</Info>
+
+Benchmarks represent the baseline yield available across DeFi for a given asset group — a reference rate for comparing vault performance. Two benchmarks are available:
+
+- **`usd`** — stablecoin yield benchmark (representative of USD lending rates across DeFi)
+- **`eth`** — ETH yield benchmark (representative of ETH staking and lending rates)
+
+---
+
+## GET /v2/benchmarks/{network}
+
+Returns the current benchmark APY for a given network and asset group.
+
+```bash
+GET https://api.vaults.fyi/v2/benchmarks/{network}
+```
+
+### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name (`mainnet`, `arbitrum`, `base`, etc.) or CAIP-2 identifier.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="code" type="string" required>
+  Benchmark identifier: `usd` or `eth`.
+</ParamField>
+
+### Response
+
+<ResponseField name="apy" type="object">
+  <Expandable title="APY by interval">
+    Each interval (`1day`, `7day`, `30day`) contains:
+    <ResponseField name="base" type="number">Base benchmark APY (raw decimal).</ResponseField>
+    <ResponseField name="reward" type="number">Reward component APY (raw decimal).</ResponseField>
+    <ResponseField name="total" type="number">Total benchmark APY (raw decimal). Use this for comparisons.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="timestamp" type="integer">Unix timestamp of this benchmark reading.</ResponseField>
+
+### Example
+
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.vaults.fyi/v2/benchmarks/mainnet?code=usd"
+```
+
+```json
+{
+  "apy": {
+    "1day": {
+      "base": 0.0316,
+      "reward": 0,
+      "total": 0.0316
+    },
+    "7day": {
+      "base": 0.0315,
+      "reward": 0,
+      "total": 0.0315
+    },
+    "30day": {
+      "base": 0.0312,
+      "reward": 0,
+      "total": 0.0312
+    }
+  },
+  "timestamp": 1743465600
+}
+```
+
+<Note>
+APY values are raw decimals. Multiply by 100 to display as a percentage (e.g. `0.0315` → `3.15%`).
+</Note>
+
+---
+
+## GET /v2/historical-benchmarks/{network}
+
+Returns historical benchmark APY as a paginated time-series.
+
+```bash
+GET https://api.vaults.fyi/v2/historical-benchmarks/{network}
+```
+
+### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP-2 identifier.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="code" type="string" required>
+  Benchmark identifier: `usd` or `eth`.
+</ParamField>
+<ParamField query="page" type="integer" default="0">Page number (zero-indexed).</ParamField>
+<ParamField query="perPage" type="integer" default="50">Items per page.</ParamField>
+<ParamField query="fromTimestamp" type="integer">Start of time range (Unix seconds).</ParamField>
+<ParamField query="toTimestamp" type="integer">End of time range (Unix seconds).</ParamField>
+
+### Response
+
+<ResponseField name="itemsOnPage" type="integer">Items on this page.</ResponseField>
+<ResponseField name="nextPage" type="integer">Next page number, or null.</ResponseField>
+<ResponseField name="data" type="array">
+  <Expandable title="Data point">
+    <ResponseField name="timestamp" type="integer">Unix timestamp (seconds).</ResponseField>
+    <ResponseField name="apy" type="object">
+      APY breakdown by interval. Each of `1day`, `7day`, `30day` contains `base`, `reward`, and `total`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example
+
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.vaults.fyi/v2/historical-benchmarks/mainnet\
+?code=usd&perPage=90&fromTimestamp=1735689600&toTimestamp=1743465600"
+```
+
+```json
+{
+  "itemsOnPage": 90,
+  "nextPage": null,
+  "data": [
+    {
+      "timestamp": 1743465600,
+      "apy": {
+        "1day": { "base": 0.0284, "reward": 0, "total": 0.0284 },
+        "7day": { "base": 0.0299, "reward": 0, "total": 0.0299 },
+        "30day": { "base": 0.0305, "reward": 0, "total": 0.0305 }
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Comparing a vault against the benchmark
+
+A common pattern is to fetch 90 days of vault APY and benchmark APY with the same `fromTimestamp` / `toTimestamp` and align by index — both calls use identical granularity so timestamps correspond positionally.
+
+```js
+const toTs   = Math.floor(Date.now() / 1000);
+const fromTs = toTs - 90 * 86400;
+const params = `page=0&perPage=90&apyInterval=7day&granularity=1day&fromTimestamp=${fromTs}&toTimestamp=${toTs}`;
+
+const [vaultHistory, benchHistory] = await Promise.all([
+  fetch(`/v2/historical/mainnet/${vaultAddress}/apy?${params}`, { headers }),
+  fetch(`/v2/historical-benchmarks/mainnet?code=usd&${params}`, { headers }),
+]);
+
+const vault = (await vaultHistory.json()).data;
+const bench = (await benchHistory.json()).data;
+
+// Align by index — same timestamps/granularity on both calls
+const chartData = vault.map((point, i) => ({
+  date:      new Date(point.timestamp * 1000),
+  vaultApy:  point.apy.total * 100,
+  benchApy:  bench[i]?.apy?.['7day']?.total * 100 ?? null,
+}));
+```
