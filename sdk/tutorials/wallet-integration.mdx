@@ -1,0 +1,269 @@
+---
+title: "Add Yield to a Wallet App with Vaults.fyi"
+description: "Learn how to detect idle assets, surface deposit options, execute vault transactions, and track user positions in a wallet integration."
+sidebarTitle: "Wallet integration"
+---
+
+This tutorial walks you through building a yield integration for a wallet application. You will detect idle assets in a user's wallet, show them personalized deposit opportunities, prepare and execute a deposit transaction, and then track the resulting position.
+
+The full example code is available in the official tutorial repositories:
+
+<CodeGroup>
+
+```bash javascript
+git clone https://github.com/WallfacerLabs/js-examples.git
+```
+
+```bash python
+git clone https://github.com/WallfacerLabs/python-examples.git
+```
+
+</CodeGroup>
+
+## Run the example
+
+<Steps>
+  <Step title="Install dependencies">
+    <CodeGroup>
+
+    ```bash javascript
+    cd js-examples/
+    npm install
+    ```
+
+    ```bash python
+    cd python_examples/
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Set your API key">
+    ```bash
+    export VAULTS_FYI_API_KEY="your_api_key_here"
+    ```
+  </Step>
+
+  <Step title="Run the wallet integration script">
+    <CodeGroup>
+
+    ```bash javascript
+    npm run wallet_integration
+    ```
+
+    ```bash python
+    python wallet_integration.py
+    ```
+
+    </CodeGroup>
+  </Step>
+</Steps>
+
+---
+
+## Step-by-step walkthrough
+
+### 1. Initialize the SDK
+
+Create the client once and reuse it across all calls.
+
+<CodeGroup>
+
+```javascript index.js
+import pkg from '@vaultsfyi/sdk';
+const { VaultsSdk } = pkg;
+
+const vaultsFyi = new VaultsSdk({
+  apiKey: process.env.VAULTS_FYI_API_KEY,
+});
+```
+
+```python main.py
+import os
+from vaultsfyi import VaultsSdk
+
+client = VaultsSdk(api_key=os.getenv("VAULTS_FYI_API_KEY"))
+```
+
+</CodeGroup>
+
+### 2. Detect idle assets
+
+Call `getIdleAssets` to find tokens sitting in a wallet that are not currently earning yield. This is the starting point for any yield nudge or suggestion UI.
+
+<CodeGroup>
+
+```javascript index.js
+async function getUserBalances(userAddress) {
+  const idleAssets = await vaultsFyi.getIdleAssets({
+    path: { userAddress }
+  });
+
+  return idleAssets;
+}
+```
+
+```python main.py
+def get_user_balances(user_address):
+    idle_assets = client.get_idle_assets(user_address)
+    return idle_assets
+```
+
+</CodeGroup>
+
+The response includes each asset's symbol, balance, and USD value. Use this data to decide which assets to surface deposit options for.
+
+<Tip>
+  Filter out assets below a minimum USD threshold before presenting options to the user. Small balances often produce high gas costs relative to yield earned.
+</Tip>
+
+### 3. Get personalized deposit options
+
+Call `getDepositOptions` with a list of assets the user holds. The API returns ranked vault opportunities filtered to those assets, sorted by APY.
+
+<CodeGroup>
+
+```javascript index.js
+async function getBestDepositOptions(userAddress) {
+  const depositOptions = await vaultsFyi.getDepositOptions({
+    path: { userAddress },
+    query: { allowedAssets: ['USDC', 'USDS'] }
+  });
+
+  return depositOptions;
+}
+```
+
+```python main.py
+def get_best_deposit_options(user_address):
+    deposit_options = client.get_deposit_options(
+        user_address,
+        allowed_assets=["USDC", "USDS"]
+    )
+    return deposit_options
+```
+
+</CodeGroup>
+
+Each option in the response includes the vault address, network, protocol name, current APY, and TVL — everything you need to render a yield card in your UI.
+
+### 4. Check transaction context
+
+Before building a deposit transaction, call `getTransactionsContext` to confirm the vault is ready to accept a deposit. The response tells you which steps are required (for example, an ERC-20 approval before the deposit itself) and the current deposit limits.
+
+<CodeGroup>
+
+```javascript index.js
+async function getTransactionContext(userAddress, network, vaultAddress) {
+  const context = await vaultsFyi.getTransactionsContext({
+    path: { userAddress, network, vaultAddress }
+  });
+
+  return context;
+}
+```
+
+```python main.py
+def get_transaction_context(user_address, network, vault_address):
+    context = client.get_transactions_context(
+        user_address=user_address,
+        network=network,
+        vault_address=vault_address
+    )
+    return context
+```
+
+</CodeGroup>
+
+### 5. Build the deposit transaction
+
+Call `getActions` with `action: 'deposit'` to receive ready-to-sign transaction calldata. Pass the calldata directly to the user's wallet or signer library — no intermediate contract needed.
+
+<CodeGroup>
+
+```javascript index.js
+async function generateDepositTransaction(
+  userAddress,
+  network,
+  vaultAddress,
+  assetAddress,
+  amount
+) {
+  const transaction = await vaultsFyi.getActions({
+    path: {
+      action: 'deposit',
+      userAddress,
+      network,
+      vaultAddress
+    },
+    query: {
+      amount,
+      assetAddress
+    }
+  });
+
+  return transaction;
+}
+```
+
+```python main.py
+def generate_deposit_transaction(
+    user_address, network, vault_address, asset_address, amount
+):
+    transaction = client.get_actions(
+        action="deposit",
+        user_address=user_address,
+        network=network,
+        vault_address=vault_address,
+        amount=amount,
+        asset_address=asset_address,
+    )
+    return transaction
+```
+
+</CodeGroup>
+
+`getActions` may return multiple steps when an approval is required before the deposit. Execute each step in order using the user's wallet.
+
+<Warning>
+  Always call `getTransactionsContext` before `getActions`. Skipping the context check can result in failed transactions if deposit limits are reached or approvals are stale.
+</Warning>
+
+### 6. Track the user's position
+
+After the deposit confirms on-chain, call `getPositions` to retrieve the user's updated vault positions. Display the balance, current APY, and accumulated returns in your portfolio view.
+
+<CodeGroup>
+
+```javascript index.js
+async function getUserPositions(userAddress) {
+  const positions = await vaultsFyi.getPositions({
+    path: { userAddress }
+  });
+
+  return positions;
+}
+```
+
+```python main.py
+def get_user_positions(user_address):
+    positions = client.get_positions(user_address)
+    return positions
+```
+
+</CodeGroup>
+
+To show total earnings for a specific vault, use `getUserVaultTotalReturns` with the same `userAddress`, `network`, and `vaultAddress`.
+
+---
+
+## What to build next
+
+- Surface pending rewards with `getRewardsTransactionsContext` and let users claim in one tap using `getRewardsClaimActions`.
+- Show per-vault event history (deposits and withdrawals) with `getUserVaultEvents`.
+- Compare the vault's current APY against benchmark rates using `getBenchmarks` to give users context on whether the yield is competitive.
+
+See the [SDK Reference](/sdk/reference) for full parameter details on every method used in this tutorial.

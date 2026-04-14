@@ -1,0 +1,129 @@
+---
+title: "API Credits & Compute Units Explained"
+description: "Learn how vaults.fyi Credits (Compute Units) work, and see the full table of base costs and per-datapoint costs for every v2 endpoint."
+sidebarTitle: "Credits"
+---
+
+Every vaults.fyi API plan allocates a monthly Credit budget. Credits — also called Compute Units (CUs) — measure the compute resources consumed by each request. This model lets you pay proportionally for what you actually use, rather than treating a simple lookup the same as a rich multi-vault data pull.
+
+## How Credits Work
+
+Each API call consumes Credits in two parts:
+
+- **Base CU per call** — a fixed cost charged for every request to that endpoint, regardless of how many results are returned.
+- **CU per datapoint returned** — an additional cost multiplied by the number of records in the response.
+
+**Example:** `/v2/detailed-vaults` has a base cost of 1 CU plus 3 CU per vault returned. If your query returns 50 vaults, the total cost is 1 + (50 × 3) = **151 CUs**.
+
+By contrast, `/v2/detailed-vaults/{network}/{vaultAddress}/apy` costs only 1 CU total because it returns a single APY value for a single vault.
+
+<Tip>
+  To minimize credit consumption, use targeted single-vault endpoints when you only need data for a specific address, and use the list endpoints when you need to compare across many vaults.
+</Tip>
+
+## v2 Endpoint Credit Costs
+
+### General
+
+| Endpoint | Base CU per call | CU per datapoint |
+|---|---|---|
+| `GET /v2/assets` | 1 | — |
+| `GET /v2/networks` | 1 | — |
+| `GET /v2/tags` | 1 | — |
+| `GET /v2/vaults` | 1 | — |
+| `GET /v2/curators` | 1 | — |
+
+### Detailed Vaults
+
+| Endpoint | Base CU per call | CU per datapoint |
+|---|---|---|
+| `GET /v2/detailed-vaults` | 1 | 3 |
+| `GET /v2/detailed-vaults/{network}/{vaultAddress}` | 3 | — |
+| `GET /v2/detailed-vaults/{network}/{vaultAddress}/apy` | 1 | — |
+| `GET /v2/detailed-vaults/{network}/{vaultAddress}/tvl` | 1 | — |
+
+### Benchmarks
+
+| Endpoint | Base CU per call | CU per datapoint |
+|---|---|---|
+| `GET /v2/benchmarks/{network}` | 3 | — |
+| `GET /v2/historical-benchmarks/{network}` | 3 | 3 |
+
+### Historical
+
+| Endpoint | Base CU per call | CU per datapoint |
+|---|---|---|
+| `GET /v2/historical/{network}/{vaultAddress}` | 3 | 3 |
+| `GET /v2/historical/{network}/{vaultAddress}/apy` | 1 | 1 |
+| `GET /v2/historical/{network}/{vaultAddress}/tvl` | 1 | 1 |
+| `GET /v2/historical/{network}/{vaultAddress}/sharePrice` | 1 | 1 |
+| `GET /v2/historical/asset-prices/{network}/{assetAddress}` | 1 | 1 |
+
+### Portfolio
+
+Portfolio endpoints require the Growth plan or higher.
+
+| Endpoint | Base CU per call | CU per datapoint |
+|---|---|---|
+| `GET /v2/portfolio/best-deposit-options/{userAddress}` | 1 | 2 |
+| `GET /v2/portfolio/best-vault/{userAddress}` | 2 | — |
+| `GET /v2/portfolio/events/{userAddress}/{network}/{vaultAddress}` | 3 | — |
+| `GET /v2/portfolio/idle-assets/{userAddress}` | 5 | — |
+| `GET /v2/portfolio/positions/{userAddress}` | 5 | — |
+| `GET /v2/portfolio/positions/{userAddress}/{network}/{vaultAddress}` | 1 | — |
+| `GET /v2/portfolio/returns/{userAddress}/{network}/{vaultAddress}` | 2 | — |
+| `GET /v2/portfolio/total-returns/{userAddress}/{network}/{vaultAddress}` | 1 | — |
+
+### Transactions
+
+Transaction endpoints require the Growth plan or higher.
+
+| Endpoint | Base CU per call | CU per datapoint |
+|---|---|---|
+| `GET /v2/transactions/context/{userAddress}/{network}/{vaultAddress}` | 3 | — |
+| `GET /v2/transactions/{action}/{userAddress}/{network}/{vaultAddress}` | 5 | — |
+| `GET /v2/transactions/rewards/context/{userAddress}` | 3 | — |
+| `GET /v2/transactions/rewards/claim/{userAddress}` | 5 | — |
+
+## Legacy v1 API Credits
+
+The v1 API uses a simpler flat-credit model — each endpoint has a single fixed cost with no per-datapoint multiplier, except for a few endpoints that scale with the number of results requested.
+
+<Note>
+  The v1 (legacy) API endpoints remain fully supported and maintained. You can access the full v1 documentation in the [Legacy v1 Endpoints](/api/legacy/overview) reference.
+</Note>
+
+<AccordionGroup>
+  <Accordion title="View v1 endpoint credit costs">
+
+| Endpoint | Credit Cost |
+|---|---|
+| `GET /v1/vaults` | 1 credit |
+| `GET /v1/tags` | 1 credit |
+| `GET /v1/tokens` | 1 credit |
+| `GET /v1/networks` | 1 credit |
+| `GET /v1/vaults/{network}/{vaultAddress}/apy` | 1 credit |
+| `GET /v1/detailed/vaults` | 1 credit base + 4 credits per vault |
+| `GET /v1/vaults/{network}/{vaultAddress}/historical-tvl/{timestamp}` | 2 credits |
+| `GET /v1/vaults/{network}/{vaultAddress}/historical-apy/{timestamp}` | 2 credits |
+| `GET /v1/vaults/{network}/{vaultAddress}/holder-total-returns/{holder}` | 2 credits |
+| `POST /v1/portfolio/best-vault/{userAddress}` | 2 credits |
+| `GET /v1/vaults/{network}/{vaultAddress}/historical-apy` | 2 credits base + 1 per datapoint |
+| `POST /v1/portfolio/best-deposit-options/{userAddress}` | 2 credits per vault |
+| `GET /v1/benchmarks` | 3 credits |
+| `GET /v1/vaults/{network}/{vaultAddress}/` | 3 credits |
+| `GET /v1/transactions/vaults/actions/details` | 3 credits |
+| `GET /v1/vaults/{network}/{vaultAddress}/holder-events/{holder}` | 3 credits |
+| `GET /v1/transactions/assets` | 3 credits |
+| `GET /v1/transactions/vaults` | 3 credits |
+| `GET /v1/vaults/{network}/{vaultAddress}/historical-data` | 4 credits base + 2 per historical point |
+| `POST /v1/transactions/vaults/deposit` | 5 credits |
+| `POST /v1/transactions/vaults/redeem` | 5 credits |
+| `POST /v1/transactions/vaults/request-redeem` | 5 credits |
+| `POST /v1/transactions/vaults/claim-redeem` | 5 credits |
+| `POST /v1/transactions/vaults/claim-rewards` | 5 credits |
+| `GET /v1/portfolio/wallet-balances` | 5 credits |
+| `GET /v1/portfolio/positions/{userAddress}` | 5 credits |
+
+  </Accordion>
+</AccordionGroup>

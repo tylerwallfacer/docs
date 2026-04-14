@@ -1,0 +1,124 @@
+---
+title: "DeFi Yield Data and Analytics for Researchers"
+description: "Query standardized APY, TVL, risk scores, and benchmark rates across 1,000+ vaults. No blockchain parsing — clean, normalized data via REST API."
+sidebarTitle: "For Analysts"
+---
+
+Vaults.fyi delivers clean, standardized metrics so you can focus on analysis instead of data wrangling. You get normalized historical and real-time APY, TVL, utilization rates, and risk scores across 1,000\+ vaults — sourced directly from onchain contracts and updated hourly.
+
+## What data is available
+
+<CardGroup cols={2}>
+  <Card title="APY and yield breakdown" icon="chart-line">
+    Access total APY split into base yield and reward token components. Compare net yields across protocols on a like-for-like basis.
+  </Card>
+
+  <Card title="Historical time series" icon="clock">
+    Pull daily APY and TVL history for any vault. Build backtests, identify yield cycles, and track how protocols respond to market conditions.
+  </Card>
+
+  <Card title="Benchmark rates" icon="scale-balanced">
+    Query the Vaults.fyi USD and ETH benchmark rates — aggregated risk-adjusted reference yields for stablecoin and ETH strategies.
+  </Card>
+
+  <Card title="Reputation scores" icon="shield-check">
+    Each vault carries a reputation score based on longevity, TVL stability, yield volatility, and underlying asset health. Use it to filter out high-risk outliers.
+  </Card>
+</CardGroup>
+
+## Key endpoints for analysis
+
+| Endpoint | What it returns |
+| --- | --- |
+| `GET /v2/detailed-vaults` | Current APY, TVL, fees, rewards, and reputation score for all vaults. Filterable by asset, network, protocol. |
+| `GET /v2/historical/{network}/{vaultAddress}` | Daily APY and TVL time series for a specific vault. |
+| `GET /v2/benchmarks/{network}` | USD and ETH benchmark reference rates over time. |
+| `GET /v2/portfolio/positions/{userAddress}` | Wallet-level positions and flow data across DeFi. |
+
+## Fetch historical vault data
+
+<CodeGroup>
+
+```python python
+import requests
+import time
+
+API_KEY = "your_api_key"
+VAULT_ADDRESS = "0xBEEF..."
+NETWORK = "mainnet"
+
+to_ts = int(time.time())
+from_ts = to_ts - 90 * 24 * 60 * 60  # 90 days
+
+response = requests.get(
+    f"https://api.vaults.fyi/v2/historical/{NETWORK}/{VAULT_ADDRESS}/apy",
+    params={
+        "fromTimestamp": from_ts,
+        "toTimestamp": to_ts,
+        "perPage": 100,
+    },
+    headers={"Authorization": f"Bearer {API_KEY}"},
+)
+
+data = response.json()
+for entry in data["data"]:
+    print(entry["timestamp"], entry["apy"]["total"])
+```
+
+```javascript javascript
+const API_KEY = "your_api_key";
+const VAULT_ADDRESS = "0xBEEF...";
+const NETWORK = "mainnet";
+
+const toTs = Math.floor(Date.now() / 1000);
+const fromTs = toTs - 90 * 24 * 60 * 60; // 90 days
+
+const response = await fetch(
+  `https://api.vaults.fyi/v2/historical/${NETWORK}/${VAULT_ADDRESS}/apy?` +
+    new URLSearchParams({
+      fromTimestamp: fromTs,
+      toTimestamp: toTs,
+      perPage: 100,
+    }),
+  {
+    headers: { Authorization: `Bearer ${API_KEY}` },
+  }
+);
+
+const data = await response.json();
+for (const entry of data.data) {
+  console.log(entry.timestamp, entry.apy.total);
+}
+```
+
+</CodeGroup>
+
+<Note>
+  The `apy.total` field is the net annualized yield. Use `apy.base` and `apy.rewards` to separate native protocol yield from token incentives.
+</Note>
+
+## Cross-protocol comparison
+
+Because Vaults.fyi normalizes data across protocols, you can make direct comparisons that would otherwise require building per-protocol adapters. APY calculations follow a standardized [methodology](/methodology/calculating-apy) so the numbers mean the same thing regardless of the underlying protocol.
+
+Use cases this enables:
+
+- **Benchmark analysis** — compare a specific vault's yield against the Vaults.fyi USD benchmark rate to assess relative performance
+- **Protocol health monitoring** — track TVL inflows and outflows across competing protocols over time
+- **Risk-adjusted screening** — filter vaults by reputation score to identify strategies worth tracking
+
+## Flows and position data
+
+Beyond vault-level metrics, you can query wallet-level position data to analyze where capital is flowing across DeFi. This includes stablecoin, ETH, and ERC-20 positions held in yield strategies, along with estimated returns per position.
+
+<Tip>
+  Push data directly into your analytics stack (Databricks, BigQuery, etc.) using the REST API on a scheduled basis. The API supports pagination for bulk historical pulls.
+</Tip>
+
+## Interactive exploration
+
+Explore the data without writing code using the [analytics dashboard](https://app.vaults.fyi/analytics). It surfaces yield trends, protocol comparisons, and benchmark charts built on the same underlying API.
+
+<Info>
+  Need custom metrics, specific vault coverage, or higher rate limits? [Contact us](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus) to discuss your data requirements.
+</Info>

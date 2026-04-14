@@ -1,0 +1,94 @@
+---
+title: "Get Your Vaults Discovered and Integrated"
+description: "List your DeFi vaults on Vaults.fyi to reach wallets, apps, and analysts. Earn attribution, monitor integration performance, and improve discovery."
+sidebarTitle: "For Protocols"
+---
+
+Vaults.fyi is the distribution layer that connects DeFi protocols to the wallets and apps their users already trust. When your vaults are indexed by Vaults.fyi, they become accessible to every integration built on the API — including wallets like Kraken Wallet, aggregators like Jumper Earn, and analytics tools used by researchers and asset managers.
+
+## How your vaults get discovered
+
+Vaults.fyi indexes yield strategies directly from onchain contracts. Once your vault meets the inclusion criteria, it appears in API responses for any application querying for vaults by asset, network, or protocol.
+
+<CardGroup cols={2}>
+  <Card title="API exposure" icon="code">
+    Your vaults appear in `GET /v2/detailed-vaults` responses. Any developer building on the API can filter, rank, and surface your vaults to their users.
+  </Card>
+
+  <Card title="Wallet integrations" icon="wallet">
+    Wallets and consumer apps that use Vaults.fyi for yield discovery automatically include your vaults in their product — no separate partnership required.
+  </Card>
+
+  <Card title="Analytics coverage" icon="chart-bar">
+    Researchers and analysts querying DeFi yield data will see your vaults alongside competitors, with standardized metrics that make comparison straightforward.
+  </Card>
+
+  <Card title="Attribution tracking" icon="bullseye-arrow">
+    Track how much volume flows into your vaults through Vaults.fyi integrations. Understand which wallets and apps are driving deposits.
+  </Card>
+</CardGroup>
+
+## Vault inclusion criteria
+
+Vaults.fyi indexes vaults that meet a baseline quality threshold. Factors considered include:
+
+- **Audit status** — vaults should have a public audit by a recognized security firm
+- **Minimum TVL** — a meaningful TVL floor filters out inactive or test deployments
+- **Contract verification** — onchain contract code must be verified and readable
+- **Asset support** — the underlying asset must be a recognized stablecoin, ETH, or major ERC-20
+
+<Note>
+  Inclusion is not guaranteed and Vaults.fyi reserves the right to exclude vaults that pose material risk to users. If your vault has been excluded and you believe it meets the criteria, [contact us](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus) to discuss.
+</Note>
+
+## Reputation scores
+
+Every indexed vault receives a reputation score that signals its relative safety and reliability to integrators and users. The score is calculated from:
+
+- **Longevity** — how long the vault has been live onchain
+- **TVL trajectory** — whether TVL has been stable, growing, or declining
+- **Yield volatility** — how much APY fluctuates over time
+- **Underlying asset health** — the risk profile of the assets held in the vault
+
+A higher reputation score means your vault is more likely to be surfaced in filtered discovery flows (for example, when a wallet only shows vaults above a certain score). Improving vault stability and longevity over time naturally improves the score.
+
+<Tip>
+  You can query your own vault's reputation score at any time using `GET /v2/detailed-vaults` filtered by your vault address. Use this to monitor how your score changes as your vault matures.
+</Tip>
+
+## Position data and portfolio intelligence
+
+Vaults.fyi tracks wallet-level positions inside your vaults. This means users who deposit through any Vaults.fyi-powered integration can see their position, accrued returns, and estimated APY in the portfolio view — with your vault correctly attributed.
+
+Protocols can use the same portfolio endpoints to:
+
+- Understand the distribution of user positions in their vaults
+- Identify large depositors across integrated wallets
+- Measure user retention and redemption patterns
+
+## Benchmark performance context
+
+Your vault's yield is displayed alongside the [Vaults.fyi USD benchmark rate](/methodology/benchmark-rates) — the risk-adjusted reference rate for DeFi stablecoin strategies. This gives users and analysts immediate context for whether your vault is outperforming or underperforming the market.
+
+Performing above the benchmark is a signal that surfaces well in discovery flows and analyst workflows. Methodology for APY calculation is [fully documented](/methodology/calculating-apy) so you can verify how your vault's yield is represented.
+
+## Getting listed
+
+<Steps>
+  <Step title="Check inclusion criteria">
+    Review the vault requirements above and confirm your vault is audited, verified onchain, and has meaningful TVL.
+  </Step>
+  <Step title="Contact the team">
+    [Submit a listing request](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus) with your vault addresses, networks, and audit links. The team will confirm eligibility and expected timeline.
+  </Step>
+  <Step title="Verify indexing">
+    Once indexed, query `GET /v2/detailed-vaults` with your vault address to confirm it appears with correct APY, TVL, and metadata.
+  </Step>
+  <Step title="Monitor attribution">
+    Use the analytics endpoints to track deposit volume, position counts, and which integrations are driving activity to your vaults.
+  </Step>
+</Steps>
+
+<Info>
+  If you are a protocol or product team and want to discuss a deeper integration — including co-marketing with wallet partners — [reach out directly](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus).
+</Info>

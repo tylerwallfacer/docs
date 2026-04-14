@@ -1,0 +1,45 @@
+---
+title: "AI Agents & LLMs: Onchain Yield with Vaults.fyi"
+description: "Use the Vaults.fyi API to build AI agents that discover, evaluate, execute, and manage DeFi yield strategies — no protocol-specific logic required."
+sidebarTitle: "Overview"
+---
+
+Vaults.fyi gives AI agents and LLMs a single, structured interface to the entire onchain yield market. Instead of writing protocol-specific integrations for each of the 80+ supported protocols, you call one API that handles discovery, evaluation, transaction preparation, and portfolio management — and returns data in a consistent format your agent can reason over directly.
+
+The full API reference optimized for LLM consumption is available at [llms.txt](https://api.vaults.fyi/llms.txt). This file contains endpoint specifications, SDK usage, and best practices for credit-efficient development.
+
+## What your agent can do
+
+- **Discover yield opportunities** — Query vaults filtered by network, asset, protocol, APY range, or TVL. Every result includes standardized market data sourced hourly from onchain contracts.
+- **Evaluate risk** — Use reputation scores and benchmark rates to compare vaults against money-market baselines and assess protocol risk without custom logic.
+- **Execute transactions** — Receive ready-to-sign deposit, redeem, and reward-claim payloads. No intermediary contracts, fully non-custodial.
+- **Handle advanced protocols** — The API abstracts deferred deposits, delayed withdrawals, and multi-step flows so your agent doesn't need to model each protocol's behavior.
+- **Claim rewards** — Merkl reward claiming is supported via `/v2/transactions/rewards/claim/{address}`.
+- **Manage portfolios** — Track user positions, detect idle assets, and surface personalized opportunities matched to wallet holdings via portfolio endpoints.
+
+## Key advantages
+
+**Single API, no protocol-specific logic.** One integration covers 1,000+ vaults across 80+ protocols. You don't need to maintain separate adapters or ABIs per protocol.
+
+**Ready-to-sign transaction payloads.** Deposit and redeem endpoints return fully formed, signable transaction objects. Your agent submits them directly — no transaction construction required.
+
+**Reputation scores and benchmarks for risk assessment.** Every vault exposes a reputation score and is benchmarked against reference rates. Your agent can filter by risk tier without custom scoring logic.
+
+**Advanced protocol handling is abstracted.** Deferred deposits, delayed withdrawals, and queued redemptions are handled by the API layer. Your agent sees a consistent interface regardless of the underlying protocol's mechanics.
+
+**Reward claiming via Merkl.** The API integrates Merkl reward data and generates ready-to-submit claim transactions, so agents can manage the full yield lifecycle including harvesting.
+
+**Portfolio management endpoints.** Endpoints like `/v2/positions/{address}`, `/v2/idle-assets/{address}`, and `/v2/best-vault/{address}` give agents the full context they need to make allocation decisions for a given wallet.
+
+## Integration options
+
+Choose the integration method that fits your workflow:
+
+<CardGroup cols={2}>
+  <Card title="MCP server for Claude" icon="hammer" href="/ai-agents/mcp-claude-desktop">
+    Connect Claude Desktop to Vaults.fyi in minutes using the Model Context Protocol server. No code required — configure once and query live vault data directly from Claude.
+  </Card>
+  <Card title="x402 pay-per-request" icon="credit-card" href="/ai-agents/x402">
+    Access the API without an API key using the x402 payment protocol. Your agent pays per request in USDC on Base — ideal for autonomous systems with their own onchain wallets.
+  </Card>
+</CardGroup>

@@ -1,0 +1,103 @@
+---
+title: "How Vaults.fyi Calculates APY"
+description: "Learn how Vaults.fyi derives APY from on-chain share prices using trailing windows, TVL-weighted averages, and reward token accounting."
+sidebarTitle: "Calculating APY"
+---
+
+Vaults.fyi calculates APY by comparing a vault's share price across fixed trailing windows — 1 day, 7 days, and 30 days — rather than relying on instantaneous or self-reported rates. This approach smooths out short-term noise and gives you a yield figure that reflects what depositors actually earned over the period.
+
+## Share price method
+
+Every yield-bearing vault issues shares that represent a depositor's proportional stake. As the vault earns yield, the total value it holds grows relative to the number of shares outstanding, so each share becomes worth more. Vaults.fyi reads these values directly from on-chain contracts hourly and derives APY from the change in share price over the chosen window.
+
+The share price at any point in time is:
+
+```
+share price = total shares value / total shares
+```
+
+The interest rate over a window is then:
+
+```
+interest rate = (current share price / previous share price) - 1
+```
+
+## APY formulas
+
+For vaults that compound automatically, Vaults.fyi uses the compounding formula:
+
+```
+APY = [(1 + interest rate) ^ (year / time)] - 1
+```
+
+For vaults that distribute simple (non-compounding) interest:
+
+```
+APY = interest rate × (year / time)
+```
+
+`time` is the length of the window in seconds and `year` is the number of seconds in a year (31,536,000).
+
+## Why trailing averages, not spot rates
+
+A spot rate captures yield at a single instant, which can be skewed by temporary liquidity events, large deposits or withdrawals, or the timing of reward distributions. Trailing averages over 1d, 7d, and 30d give you a more stable picture of what a vault actually returned across different time horizons.
+
+<Note>
+  The 1-day APY is the most responsive to recent changes. The 30-day APY is the most stable but slower to reflect strategy shifts. Use the window that matches your use case.
+</Note>
+
+## Adjusting for TVL fluctuations
+
+When a vault's total value locked (TVL) changes significantly within a window, a simple average overstates or understates yield. Vaults.fyi applies a TVL-weighted average to correct for this.
+
+Each observation is weighted by the **minimum** TVL between two consecutive data points — a conservative approach that avoids inflating yield during periods of large inflows:
+
+```
+weight_t = min(TVL_t, TVL_(t-1))
+```
+
+The weighted interest rate over the window is then:
+
+```
+interest rate = (Σ (share_price_t / share_price_(t-1)) × weight_t) / (Σ weight_t) - 1
+```
+
+<Info>
+  This weighting matters most for newer vaults or vaults that experience sudden large deposits, where TVL can swing by orders of magnitude within a single measurement window.
+</Info>
+
+## Reward token APY
+
+Some vaults distribute yield in a token that is different from the deposit asset. Vaults.fyi accounts for reward tokens separately and adds them to the base vault APY.
+
+To calculate reward APY over a given window:
+
+1. Compute the number of reward tokens distributed per deposited token over the period, using a TVL-weighted average of the emission rate.
+2. Calculate the time-weighted average price ratio between the reward token and the deposit asset (Price In Token, or PIT).
+3. Convert the accumulated reward value into deposit-asset terms using that ratio.
+4. Compare the converted value to the initial deposit to derive APY.
+
+<Tip>
+  If a vault's total APY looks higher than what the share price growth alone would suggest, the difference is likely coming from reward token emissions. Check the breakdown between `baseApy` and `rewardApy` in the API response.
+</Tip>
+
+## The `apyComposite` field
+
+The API returns an `apyComposite` object that breaks APY into two components:
+
+| Field | Description |
+|---|---|
+| `totalApy` | The fully compounded APY, combining the vault's own yield with any underlying protocol yield (e.g., a vault built on top of an LST). |
+| `intrinsicApy` | The staking or protocol-level yield from the underlying asset alone, before the vault strategy adds its own return. |
+
+<AccordionGroup>
+  <Accordion title="Why does Vaults.fyi APY differ from what a protocol reports?">
+    Protocol UIs often display forward-looking or instantaneous rates based on the current supply/borrow utilization model. Vaults.fyi reports trailing realized APY based on what share prices actually did over the window. The two can differ — especially when rates changed recently, or when a protocol's model assumes continuous compounding that does not match how yield actually accrues.
+  </Accordion>
+  <Accordion title="What happens with vaults that update earnings irregularly?">
+    Some vaults — particularly liquid staking tokens (LSTs) and Yearn-style strategies — accrue yield in batches rather than continuously. When an earnings update lands, the share price jumps sharply, which inflates the short-term APY reading for that window. Vaults.fyi surfaces this behavior honestly; the 7d and 30d windows tend to give a cleaner picture for these vault types.
+  </Accordion>
+  <Accordion title="Are there vault types with special share price logic?">
+    Yes. Rebasing vaults (such as Aave aTokens) grow the user's token balance directly rather than the share price. Staking mechanism vaults (such as StakeWise) separate principal and reward tokens. RWA vaults use oracle prices to compute share value. Each type requires its own on-chain data extraction — see [Indexing On-Chain Data](/methodology/indexing-onchain-data) for details.
+  </Accordion>
+</AccordionGroup>

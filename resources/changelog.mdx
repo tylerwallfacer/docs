@@ -1,0 +1,209 @@
+---
+title: "Vaults.fyi API & App Changelog"
+description: "A week-by-week log of all API and app updates shipped by vaults.fyi, including new protocols, endpoints, and product improvements."
+sidebarTitle: "Changelog"
+---
+
+This page tracks all notable updates to the vaults.fyi API and application, organized by week.
+
+---
+
+## Week 15, 2026 — Apr 7–13
+
+**API**
+
+- Added transactional support for **IPOR** and **Advanced Strategies BTC**, enabling deposit and withdrawal flows for these protocols.
+- Added **Convex** protocol-specific position data to the positions endpoint.
+
+**App**
+
+- Launched the first phase of the **app redesign** with refreshed navigation, updated icons, and the new Geist typeface.
+- Improved **search accuracy** across the vault table with tuned fuzzy matching.
+
+---
+
+## Week 14, 2026 — Mar 31–Apr 7
+
+**API**
+
+- Added **APYx**, **Aave V4** (tokenized spokes), and **Ember** as new protocol integrations.
+- New [`GET /v2/protocols`](/api/general) endpoint returns the full list of available protocols with name, product, and version. Useful for populating filter dropdowns and validating `allowedProtocols` params.
+- New `apyComposite` field on [detailed-vaults](/api/detailed-vaults) responses replaces `intrinsic`, with a richer structure: `totalApy` (compounded vault + underlying APY) and `intrinsicApy` (yield intrinsic to the underlying asset, e.g. staking yield), each with 1day / 7day / 30day intervals including base, reward, and total.
+- New `minVaultScore` filter on [detailed-vaults](/api/detailed-vaults) endpoints for filtering by vault quality score.
+- Shipped **auto-indexing** for new vaults — newly deployed vaults are now surfaced in the API faster.
+
+<Note>
+  **Migration required:** All `/experimental/` endpoints have been renamed to `/alpha/`. Update any integrations using `/experimental/` paths. See the [Alpha API reference](https://api.vaults.fyi/experimental/documentation/static/index.html).
+</Note>
+
+**App**
+
+- The **/analytics page** gained split network benchmarks, shared Y-axis scaling for chart comparison, and updated default vault comparison lists.
+- **Fee transparency** improved with Fluid withdrawal fee notes and generic fee indicators.
+- Added **protocol tooltip** to the vault table, APY format capping above 1,000% for cleaner display, and updated protocol/curator images.
+
+---
+
+## Week 13, 2026 — Mar 24–30
+
+**API**
+
+- **Vault capacity** landed in the `detailed-vaults` endpoint — integrators can now see deposit caps and utilization.
+- Added **vault flags with severity** to the API, surfacing warning indicators for vaults.
+- **CCTP forwarding fee optimization** skips unnecessary fees for same-chain operations.
+
+**App**
+
+- Shipped major **/analytics page** upgrades: TVL sections, shareable benchmark URLs via URL params, improved benchmark dropdown, and repositioned APY range toggle and period selector.
+- **Vault flags** now display as warning indicators on vault listings.
+
+---
+
+## Week 12, 2026 — Mar 17–23
+
+**API**
+
+- Added **Etherlink** as a new network with Morpho vault factories.
+- Launched **OpenCover** protocol support with solver-based async deposit settlement tracking.
+- Vault **capacity data** is now aggregated and stored, with the pipeline ready for API exposure.
+- Introduced **vault warnings with severity levels**.
+
+**App**
+
+- **Etherlink** fully integrated in the app.
+- The **asset scoring system** was revamped for more accurate reputation calculations, and **intrinsic yield indicators** now display in the UI.
+- **CCTP transfer tracking** added to the frontend.
+
+---
+
+## Week 11, 2026 — Mar 10–16
+
+**API**
+
+- Added **Ultrayield** as a new protocol.
+- Introduced **multi-asset Upshift vaults**, a **Gauntlet gtBTC vault**, and **capacity indicators** that show when vaults are near their supply cap.
+
+**App**
+
+- Shipped the **CCTP cross-chain bridging page**, enabling users to bridge assets between supported networks directly in the app.
+- The **vault opportunity page** was redesigned with improved SEO and layout.
+
+---
+
+## Week 10, 2026 — Mar 3–9
+
+**API**
+
+- Added **Concrete V2** protocol with full async request-redeem flows.
+- Shipped **NRT endpoints** (alpha) and moved **deep AMM endpoints** to the new beta API section.
+- Reorganized alpha API structure for clearer endpoint grouping.
+
+**App**
+
+- Major **vault page redesign** went live.
+
+---
+
+## Week 9, 2026 — Feb 24–Mar 2
+
+**API**
+
+- Added [**near-real-time ("NRT") endpoints**](https://api.vaults.fyi/alpha/documentation/static/index.html#/NRT) (alpha) for current data on vault share price, total assets, total supply, and underlying asset price.
+- Shipped **historical asset prices endpoint** (`/v2/historical/asset-prices/{network}/{address}`) for USD price time series.
+- Introduced **APY update timestamps for LLMs** to help AI consumers know data freshness.
+- Expanded **Upshift** support with separate handling for distinct vault types.
+
+---
+
+## Week 8, 2026 — Feb 17–23
+
+**API**
+
+- Launched **vault fees in the API** — the `detailed-vaults` endpoint now returns fee data (performance, management, deposit) read from on-chain contracts.
+
+---
+
+## Week 7, 2026 — Feb 10–16
+
+**API**
+
+- Shipped **Aera vaults on additional chains** (beyond mainnet).
+
+**App**
+
+- Added external links on vault pages and curator name truncation.
+- Improved **wallet connectivity** with enhanced capabilities detection.
+
+---
+
+## Week 6, 2026 — Feb 3–9
+
+**API**
+
+- Added **Monad** chain setup and initial configuration.
+- Improved **position tracking accuracy** with daily user balance computation.
+- Added the [**intent status endpoint**](https://api.vaults.fyi/experimental/documentation/static/index.html#/Cross%20Chain/get_alpha_transactions_intent_status) (alpha) and expanded intent quote responses with asset decimals and expiration timestamps.
+- Added **Avon** protocol with analytics and transactional support.
+
+**App**
+
+- Fixed holders chart rendering for edge cases.
+
+---
+
+## Week 5, 2026 — Jan 27–Feb 2
+
+**API**
+
+- Added the **Pendle transactions endpoint** (alpha) for constructing Pendle position entry/exit flows, plus a **Pendle transactions context endpoint** for pre-flight data.
+- Shipped **Veda** vault event tracking for improved queue monitoring and position visibility.
+- Introduced **isCorrupted flag** in vault responses to surface data quality issues transparently.
+- Launched **CCTP cross-chain bridge transaction endpoints** (alpha) — context, execution, and status tracking for Circle CCTP transfers.
+- Improved holder computation performance and balance calculation accuracy.
+
+---
+
+## Week 4, 2026 — Jan 20–26
+
+**API**
+
+- Shipped [**intent-based cross-chain transactions**](https://api.vaults.fyi/alpha/documentation/static/index.html#/Cross%20Chain) (alpha) with Rhinestone integration, enabling cross-chain deposit flows via EIP-712 signed quotes.
+- APY min/max filters were expanded for more flexible vault queries.
+- Added **Kelp restaking analytics** support.
+
+**App**
+
+- Added **multiple rewards claiming UI** overhaul for better multi-vault reward management.
+- Refined network filter sorting with proper chain name handling.
+
+---
+
+## Week 3, 2026 — Jan 13–19
+
+**API**
+
+- Introduced the **alpha [Pendle market read endpoint](https://api.vaults.fyi/experimental/documentation/static/index.html)**, laying groundwork for fixed-term yield products.
+- Added **deposit limit visibility** — the `detailed-vaults` endpoint now returns `maxDeposit` data.
+- Shipped **Mellow multi-vault transactional support** and split the Mellow protocol into distinct services.
+- Added **Euler on Linea** and the **Katana MetaMorpho** integration.
+
+**App**
+
+- Deposit limit indicators now display in the app UI.
+- Frontend optimizations reduced memory usage and bundle size for faster page loads.
+
+---
+
+## Week 2, 2026 — Jan 6–12
+
+**API**
+
+- Launched the **curators endpoint** (`/v2/curators`) as a new first-class API resource for vault curator discovery and filtering.
+- Added **Katana** network support with Yearn and MetaMorpho vaults, including token aliases and image handling.
+- Shipped **Mellow Core** protocol support, plus **Veda** vault integration via Lido.
+- Introduced **Lagoon** vault discovery via API and Morpho V2 factory support.
+- Improved position tracking accuracy with upgraded balance calculations and holder computation.
+
+**App**
+
+- Added curator sorting in filters.

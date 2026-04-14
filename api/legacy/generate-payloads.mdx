@@ -1,0 +1,471 @@
+---
+title: "v1 Generate Payloads: DeFi Transaction Calldata"
+description: "Prepare calldata for deposit, withdraw, redeem, and claim-rewards transactions across DeFi protocols using the Vaults.fyi v1 payload generation API."
+sidebarTitle: "Generate Payloads"
+---
+
+The v1 payload generation endpoints prepare transaction details and calldata for interactions with smart contracts across leading DeFi protocols, including Aave, Morpho, Euler, Compound, Maker/Sky, and Lido. The API is entirely non-custodial — it constructs payloads for you to submit, without ever holding or controlling user funds.
+
+<Warning>
+  These are legacy v1 endpoints. They are fully supported and maintained. For new integrations, consider using the [v2 endpoints](/api/general).
+</Warning>
+
+---
+
+## Get supported vaults
+
+```http
+GET https://api.vaults.fyi/v1/transactions/vaults
+```
+
+Returns the list of vaults that support transactional endpoints on a given network. Each entry includes the vault name, protocol, contract address, LP token address, and supported assets.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier. Possible values: `mainnet`, `arbitrum`, `optimism`, `polygon`, `base`, `gnosis`, `unichain`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/vaults?network=mainnet HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+[
+  {
+    "name": "USDC Lending",
+    "protocol": "Aave",
+    "address": "0xdef...456",
+    "lpTokenAddress": "0xghi...789",
+    "network": "mainnet",
+    "assets": [
+      {
+        "address": "0xa0b...789",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "decimals": 6,
+        "network": "mainnet"
+      }
+    ]
+  }
+]
+```
+
+---
+
+## Get supported assets
+
+```http
+GET https://api.vaults.fyi/v1/transactions/assets
+```
+
+Returns all assets that can be used with transactional endpoints on a given network.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier. Possible values: `mainnet`, `arbitrum`, `optimism`, `polygon`, `base`, `gnosis`, `unichain`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/assets?network=mainnet HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+[
+  {
+    "address": "0xa0b...789",
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "decimals": 6,
+    "network": "mainnet"
+  }
+]
+```
+
+---
+
+## Get contract interaction details
+
+```http
+GET https://api.vaults.fyi/v1/transactions/vaults/actions/details
+```
+
+Returns the available smart contract interactions for a specific vault and user, including the current deposit and redeem steps, LP token balance, idle assets, locked value, unclaimed assets, and any claimable rewards. Use this endpoint to determine which actions are available before preparing calldata.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField query="userAddress" type="string" required>
+  User wallet address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/vaults/actions/details?network=mainnet&userAddress=0xabc...123&vaultAddress=0xdef...456 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "currentDepositStep": "deposit",
+  "depositSteps": [
+    {
+      "actions": ["approve", "deposit"],
+      "actionsUrl": "https://example.com/actions",
+      "name": "deposit"
+    }
+  ],
+  "currentRedeemStep": "redeem",
+  "redeemSteps": [
+    {
+      "actions": ["redeem"],
+      "actionsUrl": "https://example.com/actions",
+      "name": "redeem"
+    }
+  ],
+  "lpTokenBalance": "1045.123456",
+  "idleAssets": { "USDC": "500.000000" },
+  "lockedValueInAssets": { "USDC": "1050.000000" },
+  "unclaimedAssets": { "USDC": "2.500000" },
+  "rewards": {
+    "claimable": [
+      {
+        "amount": "10.000000",
+        "token": {
+          "address": "0xjkl...012",
+          "name": "Aave Token",
+          "symbol": "AAVE",
+          "decimals": 18,
+          "network": "mainnet"
+        }
+      }
+    ],
+    "currentStep": "claim",
+    "steps": [
+      {
+        "actions": ["claim"],
+        "actionsUrl": "https://example.com/actions",
+        "name": "claim"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Prepare supply / deposit calldata
+
+```http
+GET https://api.vaults.fyi/v1/transactions/vaults/deposit
+```
+
+Returns the transaction payload and calldata needed to deposit assets into a vault. You can optionally request a simulation of the transaction before submitting it.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField query="sender" type="string" required>
+  Depositing wallet address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="assetAddress" type="string" required>
+  Token contract address to deposit. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="vaultAddress" type="string" required>
+  Target vault address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="amount" type="string" required>
+  Amount to deposit, in the token's smallest unit (e.g. wei for 18-decimal tokens).
+</ParamField>
+
+<ParamField query="simulate" type="string" default="false">
+  Set to `true` to include a transaction simulation in the response.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/vaults/deposit?network=mainnet&sender=0xabc...123&assetAddress=0xa0b...789&vaultAddress=0xdef...456&amount=1000000000 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "currentActionIndex": 1,
+  "actions": [
+    {
+      "name": "deposit",
+      "tx": {
+        "to": "0xdef...456",
+        "chainId": 1,
+        "data": "0x...",
+        "value": "0"
+      },
+      "simulation": {
+        "url": "https://example.com/sim/abc",
+        "status": "success",
+        "tokensReceived": { "aUSDC": "1000000000" },
+        "tokensSpent": { "USDC": "1000000000" }
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Prepare withdraw / redeem calldata
+
+```http
+GET https://api.vaults.fyi/v1/transactions/vaults/redeem
+```
+
+Returns the transaction payload and calldata needed to withdraw assets from a vault.
+
+<Note>
+  For vaults with redemption queues or waiting periods (e.g. Lido stETH), use the [Request Redeem](#prepare-request-redeem-calldata) and [Claim Redeem](#prepare-claim-redeem-calldata) endpoints below instead.
+</Note>
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField query="sender" type="string" required>
+  Withdrawing wallet address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="assetAddress" type="string" required>
+  Token contract address to receive. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="vaultAddress" type="string" required>
+  Vault address to redeem from. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="amount" type="string" required>
+  Amount to redeem, in the token's smallest unit.
+</ParamField>
+
+<ParamField query="all" type="string">
+  Set to `true` to redeem the full position.
+</ParamField>
+
+<ParamField query="simulate" type="string" default="false">
+  Set to `true` to include a transaction simulation in the response.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/vaults/redeem?network=mainnet&sender=0xabc...123&assetAddress=0xa0b...789&vaultAddress=0xdef...456&amount=1000000000 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+---
+
+## Prepare request-redeem calldata
+
+```http
+GET https://api.vaults.fyi/v1/transactions/vaults/request-redeem
+```
+
+Initiates a redemption request for vaults that have a waiting period before assets can be claimed (e.g. Lido stETH). Submit this transaction first, then use the [claim-redeem](#prepare-claim-redeem-calldata) endpoint once the redemption is ready.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField query="sender" type="string" required>
+  Wallet address submitting the request. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="assetAddress" type="string" required>
+  Token contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="vaultAddress" type="string" required>
+  Vault address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="amount" type="string" required>
+  Amount to request, in the token's smallest unit.
+</ParamField>
+
+<ParamField query="simulate" type="string" default="false">
+  Set to `true` to include a transaction simulation in the response.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/vaults/request-redeem?network=mainnet&sender=0xabc...123&assetAddress=0xa0b...789&vaultAddress=0xdef...456&amount=1000000000000000000 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+---
+
+## Prepare claim-redeem calldata
+
+```http
+GET https://api.vaults.fyi/v1/transactions/vaults/claim-redeem
+```
+
+Claims assets after a redemption request has been fulfilled. Use this after calling [request-redeem](#prepare-request-redeem-calldata) and waiting for the vault's redemption period to complete.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField query="sender" type="string" required>
+  Wallet address claiming the assets. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="assetAddress" type="string" required>
+  Token contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="vaultAddress" type="string" required>
+  Vault address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="simulate" type="string" default="false">
+  Set to `true` to include a transaction simulation in the response.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/vaults/claim-redeem?network=mainnet&sender=0xabc...123&assetAddress=0xa0b...789&vaultAddress=0xdef...456 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+---
+
+## Prepare claim-rewards calldata
+
+```http
+GET https://api.vaults.fyi/v1/transactions/vaults/claim-rewards
+```
+
+Returns the transaction payload and calldata needed to claim accrued rewards for a user's position in a specific vault.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField query="sender" type="string" required>
+  Wallet address claiming rewards. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="assetAddress" type="string" required>
+  Token contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="vaultAddress" type="string" required>
+  Vault address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField query="simulate" type="string" default="false">
+  Set to `true` to include a transaction simulation in the response.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/transactions/vaults/claim-rewards?network=mainnet&sender=0xabc...123&assetAddress=0xa0b...789&vaultAddress=0xdef...456 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response (all calldata endpoints)
+
+```json
+{
+  "currentActionIndex": 1,
+  "actions": [
+    {
+      "name": "claim-rewards",
+      "tx": {
+        "to": "0xdef...456",
+        "chainId": 1,
+        "data": "0x...",
+        "value": "0"
+      },
+      "simulation": {
+        "url": "https://example.com/sim/xyz",
+        "status": "success",
+        "tokensReceived": { "AAVE": "10000000000000000000" },
+        "tokensSpent": {}
+      }
+    }
+  ]
+}
+```

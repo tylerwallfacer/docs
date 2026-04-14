@@ -1,0 +1,231 @@
+---
+title: "v1 Position Tracking Endpoints for DeFi Wallets"
+description: "v1 endpoints for vault positions, wallet balances, transaction history, and returns. Fully supported; for new integrations use the v2 portfolio endpoints."
+sidebarTitle: "Position Tracking"
+---
+
+The v1 position tracking endpoints let you look up everything related to a wallet's activity across supported vaults: active lending and staking positions, idle token balances, a full transaction history for any vault, and estimated total returns.
+
+<Warning>
+  These are legacy v1 endpoints. They are fully supported and maintained. For new integrations, consider using the [v2 endpoints](/api/general).
+</Warning>
+
+---
+
+## Get user positions
+
+```http
+GET https://api.vaults.fyi/v1/portfolio/positions/{userAddress}
+```
+
+Returns all active lending and staking LP positions for a wallet, organized by network. Each position includes the vault address, protocol name, native and USD balances, unclaimed rewards, current APY, and underlying asset details.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="userAddress" type="string" required>
+  Wallet address to query. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="apyInterval" type="string" default="7day">
+  APY averaging window to use in the response. Possible values: `1day`, `7day`, `30day`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/portfolio/positions/0xabc...123 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "mainnet": [
+    {
+      "vaultAddress": "0xdef...456",
+      "protocolName": "Aave",
+      "protocolLogo": "https://example.com/aave.png",
+      "vaultName": "USDC Lending",
+      "balanceUsd": "1050.00",
+      "balanceNative": "1050.000000",
+      "balanceLp": "1045.123456",
+      "unclaimedUsd": "2.50",
+      "unclaimedNative": "2.500000",
+      "apy": {
+        "base": 420,
+        "rewards": 48,
+        "total": 468
+      },
+      "asset": {
+        "name": "USD Coin",
+        "assetAddress": "0xa0b...789",
+        "assetCaip": "eip155:1/erc20:0xa0b...789",
+        "symbol": "USDC",
+        "decimals": 6
+      }
+    }
+  ],
+  "arbitrum": [],
+  "base": []
+}
+```
+
+<Note>
+  The response includes a key for every supported network (`mainnet`, `arbitrum`, `optimism`, `polygon`, `base`, `gnosis`, `unichain`) even if the wallet has no positions on that network.
+</Note>
+
+---
+
+## Get user balances
+
+```http
+GET https://api.vaults.fyi/v1/portfolio/wallet-balances
+```
+
+Returns idle (non-staked) token balances for a wallet across all supported networks. Use this to identify assets a user holds that could be put to work in a yield vault.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="account" type="string" required>
+  Wallet address to query. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/portfolio/wallet-balances?account=0xabc...123 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "mainnet": [
+    {
+      "address": "0xa0b...789",
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "decimals": 6,
+      "network": "mainnet",
+      "balance": "500000000",
+      "balanceNative": "500.000000",
+      "balanceUsd": "500.00",
+      "type": "asset"
+    }
+  ],
+  "arbitrum": [],
+  "base": []
+}
+```
+
+---
+
+## Get past vault transactions by user address
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/holder-events/{holder}
+```
+
+Returns a chronological list of all deposit, withdrawal, and transfer events for a specific wallet on a specific vault. Each event includes the activity type, timestamp, transaction amount, and position value at the time.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier. E.g. `mainnet`, `arbitrum`, `base`.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField path="holder" type="string" required>
+  Wallet address of the holder. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/vaults/mainnet/0xdef...456/holder-events/0xabc...123 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "events": [
+    {
+      "activity": "Transfer",
+      "timestamp": 1700000000,
+      "amount": {
+        "usd": 1000.00,
+        "native": "1000.000000"
+      },
+      "positionValue": {
+        "usd": 1050.00,
+        "native": "1050.000000"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Get estimated returns for a user's vault position
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/holder-total-returns/{holder}
+```
+
+Returns the estimated total returns a wallet has earned from a specific vault, denominated in both USD and the vault's native asset.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField path="holder" type="string" required>
+  Wallet address of the holder. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/vaults/mainnet/0xdef...456/holder-total-returns/0xabc...123 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "usd": 52.34,
+  "native": 52.34
+}
+```

@@ -1,0 +1,43 @@
+---
+title: "Legacy v1 API Endpoints Overview"
+description: "Overview of the Vaults.fyi v1 legacy API: fully supported endpoints covering market data, position tracking, payload generation, and contextual insights."
+sidebarTitle: "Overview"
+---
+
+The v1 API gives you access to DeFi yield market data, user position tracking, transaction payload generation, and wallet-contextual insights across leading protocols such as Aave, Morpho, Euler, Compound, and Maker/Sky.
+
+<Warning>
+  These are legacy v1 endpoints. They are **fully supported and maintained** — existing integrations can continue building on v1 with confidence. For new integrations, we recommend using the [v2 endpoints](/api/general), which offer an improved developer experience and all the data available in v1, plus more.
+</Warning>
+
+## Endpoint categories
+
+The v1 API is organized into four categories:
+
+### Market Data
+
+Query real-time and historical TVL and APY data across lending and staking vaults. Retrieve data for a single vault, paginate across the full vault catalog, or pull benchmark rates for stablecoins and ETH.
+
+[Explore Market Data endpoints →](/api/legacy/market-data)
+
+### Position Tracking
+
+Look up a wallet's active vault positions, idle token balances, transaction history, and estimated total returns for any vault they have interacted with.
+
+[Explore Position Tracking endpoints →](/api/legacy/position-tracking)
+
+### Generate Payloads
+
+Prepare calldata for supply, withdraw, request-redeem, claim-redeem, and claim-rewards interactions across supported protocols. The API is entirely non-custodial — it prepares transaction payloads without ever holding or controlling user funds.
+
+[Explore Generate Payloads endpoints →](/api/legacy/generate-payloads)
+
+### Contextual Insights
+
+Surface the best yield opportunities for a specific wallet address, filtered by the assets it already holds, preferred networks, minimum TVL, and more. Powers integrations such as the Etherscan Yield Opportunity card.
+
+[Explore Contextual Insights endpoints →](/api/legacy/contextual-insights)
+
+<Note>
+  v2 endpoints are available at [/api/general](/api/general). v2 includes all v1 functionality plus additional data and a cleaner interface. We encourage you to check it out when starting a new integration.
+</Note>

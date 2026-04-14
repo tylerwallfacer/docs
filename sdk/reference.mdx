@@ -1,0 +1,392 @@
+---
+title: "Vaults.fyi SDK Method Reference"
+description: "Complete reference for every TypeScript and Python SDK method: vault discovery, historical data, portfolio, transactions, rewards, and benchmarks."
+sidebarTitle: "SDK Reference"
+---
+
+This page documents every method available in the Vaults.fyi SDK. All methods are available in both the TypeScript (`@vaultsfyi/sdk`) and Python (`vaultsfyi`) packages. TypeScript examples are shown below; the Python SDK uses snake_case equivalents for all method and parameter names.
+
+<Note>
+  For installation and client setup, see the [quickstart guide](/sdk/quickstart).
+</Note>
+
+## Vault discovery
+
+Methods for browsing and filtering available yield vaults.
+
+### `getAllVaults`
+
+Returns information about all available vaults. Supports filtering by network, protocol, asset, TVL range, and transactional status.
+
+```javascript
+const vaults = await sdk.getAllVaults({
+  query: {
+    page: 0,
+    perPage: 100,
+    allowedNetworks: ['mainnet', 'polygon'],
+    allowedProtocols: ['aave', 'compound'],
+    allowedAssets: ['USDC', 'USDT'],
+    minTvl: 1000000,
+    maxTvl: 100000000,
+    onlyTransactional: true,
+    onlyAppFeatured: false
+  }
+})
+```
+
+### `getVault`
+
+Returns detailed information about a single vault identified by network and address.
+
+```javascript
+const vault = await sdk.getVault({
+  path: {
+    network: 'mainnet',
+    vaultAddress: '0x1234...'
+  }
+})
+```
+
+### `getAssets`
+
+Lists all tracked assets across networks with pagination.
+
+```javascript
+const assets = await sdk.getAssets({
+  query: {
+    page: 0,
+    perPage: 100
+  }
+})
+```
+
+---
+
+## Historical data
+
+Methods for retrieving time-series APY, TVL, and share price data.
+
+### `getVaultHistoricalData`
+
+Returns combined historical APY and TVL data for a vault within a time range.
+
+```javascript
+const historicalData = await sdk.getVaultHistoricalData({
+  path: {
+    network: 'mainnet',
+    vaultAddress: '0x1234...'
+  },
+  query: {
+    page: 0,
+    perPage: 100,
+    apyInterval: '30day',
+    fromTimestamp: 1640995200,
+    toTimestamp: 1672531200
+  }
+})
+```
+
+### `getVaultHistoricalApy`
+
+Returns APY-only time series data. Lighter response than `getVaultHistoricalData` when you don't need TVL.
+
+```javascript
+const apyHistory = await sdk.getVaultHistoricalApy({
+  path: {
+    network: 'mainnet',
+    vaultAddress: '0x1234...'
+  },
+  query: {
+    page: 0,
+    perPage: 100,
+    fromTimestamp: 1640995200,
+    toTimestamp: 1672531200
+  }
+})
+```
+
+### `getVaultHistoricalTvl`
+
+Returns TVL-only time series data.
+
+```javascript
+const tvlHistory = await sdk.getVaultHistoricalTvl({
+  path: {
+    network: 'mainnet',
+    vaultAddress: '0x1234...'
+  },
+  query: {
+    page: 0,
+    perPage: 100,
+    fromTimestamp: 1640995200,
+    toTimestamp: 1672531200
+  }
+})
+```
+
+### `getVaultHistoricalSharePrice`
+
+Returns share price time series data for a vault.
+
+```javascript
+const sharePriceHistory = await sdk.getVaultHistoricalSharePrice({
+  path: {
+    network: 'mainnet',
+    vaultAddress: '0x1234...'
+  },
+  query: {
+    page: 0,
+    perPage: 100,
+    fromTimestamp: 1640995200,
+    toTimestamp: 1672531200
+  }
+})
+```
+
+---
+
+## Portfolio
+
+Methods for working with user positions, idle assets, deposit options, returns, and event history.
+
+### `getPositions`
+
+Returns all active vault positions for a wallet address, optionally filtered by network.
+
+```javascript
+const positions = await sdk.getPositions({
+  path: {
+    userAddress: '0x1234...'
+  },
+  query: {
+    allowedNetworks: ['mainnet', 'polygon']
+  }
+})
+```
+
+### `getPosition`
+
+Returns the position for a single wallet address in a specific vault.
+
+```javascript
+const position = await sdk.getPosition({
+  path: {
+    userAddress: '0x1234...',
+    network: 'mainnet',
+    vaultAddress: '0x5678...'
+  }
+})
+```
+
+### `getDepositOptions`
+
+Returns ranked deposit opportunities for a wallet, personalized to the wallet's holdings. Supports filtering by network, asset, protocol, TVL, and APY interval.
+
+```javascript
+const options = await sdk.getDepositOptions({
+  path: {
+    userAddress: '0x1234...'
+  },
+  query: {
+    allowedNetworks: ['mainnet', 'polygon'],
+    allowedAssets: ['USDC', 'USDT'],
+    allowedProtocols: ['aave', 'compound'],
+    minTvl: 1000000,
+    minUsdAssetValueThreshold: 1000,
+    onlyTransactional: true,
+    onlyAppFeatured: false,
+    apyInterval: '7day',
+    alwaysReturnAssets: ['USDC'],
+    maxVaultsPerAsset: 5
+  }
+})
+```
+
+### `getIdleAssets`
+
+Returns assets sitting in a wallet that are not currently earning yield and could be deposited into a vault.
+
+```javascript
+const idleAssets = await sdk.getIdleAssets({
+  path: {
+    userAddress: '0x1234...'
+  }
+})
+```
+
+### `getUserVaultTotalReturns`
+
+Returns total profit and loss for a wallet in a specific vault since the first deposit.
+
+```javascript
+const returns = await sdk.getUserVaultTotalReturns({
+  path: {
+    userAddress: '0x1234...',
+    network: 'mainnet',
+    vaultAddress: '0x5678...'
+  }
+})
+```
+
+### `getUserVaultEvents`
+
+Returns the full deposit and withdrawal event history for a wallet in a specific vault.
+
+```javascript
+const events = await sdk.getUserVaultEvents({
+  path: {
+    userAddress: '0x1234...',
+    network: 'mainnet',
+    vaultAddress: '0x5678...'
+  }
+})
+```
+
+---
+
+## Transactions
+
+Methods for building and submitting vault transactions.
+
+### `getTransactionsContext`
+
+Returns the current transaction context for a vault interaction: available action steps, token balances, allowance status, and deposit limits. Call this before `getActions` to determine what steps are required.
+
+```javascript
+const context = await sdk.getTransactionsContext({
+  path: {
+    userAddress: '0x1234...',
+    network: 'mainnet',
+    vaultAddress: '0x5678...'
+  }
+})
+```
+
+### `getActions`
+
+Returns ready-to-sign transaction calldata for a vault action. Pass the result directly to your wallet or signer.
+
+```javascript
+const actions = await sdk.getActions({
+  path: {
+    action: 'deposit',
+    userAddress: '0x1234...',
+    network: 'mainnet',
+    vaultAddress: '0x5678...'
+  },
+  query: {
+    assetAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    amount: '1000000'
+  }
+})
+```
+
+The `action` parameter accepts: `deposit`, `redeem`, `request-redeem`, `claim-redeem`, `request-deposit`, `claim-deposit`, `start-redeem-cooldown`.
+
+---
+
+## Rewards
+
+Methods for checking and claiming pending rewards.
+
+### `getRewardsTransactionsContext`
+
+Returns all claimable reward positions for a wallet across every supported network.
+
+```javascript
+const rewardsContext = await sdk.getRewardsTransactionsContext({
+  path: {
+    userAddress: '0x1234...'
+  }
+})
+```
+
+### `getRewardsClaimActions`
+
+Returns transaction calldata to claim one or more pending rewards. Pass the `claimIds` returned by `getRewardsTransactionsContext`.
+
+```javascript
+const claimActions = await sdk.getRewardsClaimActions({
+  path: {
+    userAddress: '0x1234...'
+  },
+  query: {
+    claimIds: ['claim-id-1', 'claim-id-2']
+  }
+})
+```
+
+---
+
+## Benchmarks
+
+Methods for retrieving reference rates to compare vault performance against.
+
+### `getBenchmarks`
+
+Returns current benchmark rates for a network. Use the `code` parameter to specify `usd` or `eth` denomination.
+
+```javascript
+const benchmarks = await sdk.getBenchmarks({
+  path: {
+    network: 'mainnet'
+  },
+  query: {
+    code: 'usd'
+  }
+})
+```
+
+### `getHistoricalBenchmarks`
+
+Returns paginated historical benchmark rates for a network within a time range.
+
+```javascript
+const historicalBenchmarks = await sdk.getHistoricalBenchmarks({
+  path: {
+    network: 'mainnet'
+  },
+  query: {
+    code: 'usd',
+    page: 0,
+    perPage: 100,
+    fromTimestamp: 1640995200,
+    toTimestamp: 1672531200
+  }
+})
+```
+
+---
+
+## Error handling
+
+The SDK throws `HttpResponseError` for all non-2xx API responses. Catch this class to handle errors gracefully and access the status code and message.
+
+```javascript
+import { VaultsSdk, HttpResponseError } from '@vaultsfyi/sdk'
+
+try {
+  const vault = await sdk.getVault({
+    path: {
+      network: 'mainnet',
+      vaultAddress: 'invalid-address'
+    }
+  })
+} catch (error) {
+  if (error instanceof HttpResponseError) {
+    console.error('API error:', error.message)
+  }
+}
+```
+
+## TypeScript support
+
+The SDK is written in TypeScript and ships full type definitions generated from the OpenAPI spec. All response types are inferred automatically — no manual casting required.
+
+```javascript
+// Types are inferred from the API spec
+const vaults = await sdk.getAllVaults()   // DetailedVault[]
+const vault  = await sdk.getVault({ /* ... */ }) // DetailedVault
+```
+
+The Python SDK source is available at [github.com/WallfacerLabs/python-sdk](https://github.com/WallfacerLabs/python-sdk).

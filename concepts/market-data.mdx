@@ -1,0 +1,63 @@
+---
+title: "DeFi Yield Market Data: APY, TVL, and Fees"
+description: "Query standardized APY, TVL, fees, reputation scores, and rewards across 1,000+ vaults via hourly on-chain indexing — all from a single API."
+sidebarTitle: "Market Data"
+---
+
+The Vaults.fyi API gives you standardized market data for over 1,000 DeFi yield vaults across 80+ protocols and 20+ chains. Instead of building and maintaining one-off integrations per protocol, you get a single endpoint that returns consistent, comparable data for every supported vault.
+
+Data is indexed on-chain on an hourly basis, so you always have current metrics alongside the full historical record you need for backtesting and trend analysis.
+
+## What data is available
+
+The table below shows the key data fields returned across market data endpoints.
+
+| Field | Description |
+|---|---|
+| `apy` | Current annual percentage yield, normalized across protocols |
+| `apy1d` / `apy7d` / `apy30d` | Rolling average APY over 1, 7, and 30 days |
+| `tvl` | Total value locked in the vault, in USD |
+| `fees` | Protocol fee breakdown (management, performance, etc.) |
+| `reputationScore` | Vaults.fyi risk and reputation score for the vault |
+| `rewards` | Claimable reward tokens and estimated rates |
+| `capacity` | Maximum deposit capacity, if enforced by the protocol |
+| `flags` | Vault-level signals such as paused state or deprecation |
+
+<Note>
+APY, TVL, fees, and reputation scores are computed consistently across all protocols. This means you can safely sort and compare vaults from different protocols side by side.
+</Note>
+
+## Endpoints
+
+<CardGroup cols={2}>
+  <Card title="Vault discovery" icon="magnifying-glass" href="/api/detailed-vaults">
+    Filter and sort vaults by APY, TVL, protocol, network, asset, reputation score, and more.
+  </Card>
+  <Card title="Single vault detail" icon="circle-info" href="/api/detailed-vaults">
+    Full detail on a specific vault including current and historical APY, TVL, fees, rewards, and risk scores.
+  </Card>
+  <Card title="Historical data" icon="chart-line" href="/api/historical">
+    Time-series APY, TVL, and asset price data over configurable date ranges and granularity.
+  </Card>
+  <Card title="Benchmarks" icon="gauge" href="/api/benchmarks">
+    USD and ETH benchmark rates aggregated across top vaults for performance comparison.
+  </Card>
+</CardGroup>
+
+You can also query reference data — supported networks, tokens, and protocols — using `GET /v2/networks`, `GET /v2/tokens`, and `GET /v2/protocols`. These are useful for building filter dropdowns and validating user input.
+
+## How data is sourced
+
+Vaults.fyi indexes vault state directly from on-chain contract calls, not from third-party price feeds or protocol-reported numbers. This approach means:
+
+- **Hourly updates.** Vault metrics refresh every hour from on-chain data.
+- **Consistent methodology.** APY is calculated using the same formula across all protocols, so comparisons are meaningful.
+- **Historical depth.** Time-series data is available for backtesting, charting, and reporting without you needing to store it yourself.
+
+<Tip>
+Use the `apy7d` or `apy30d` fields rather than `apy` when you want to smooth out short-term volatility and show users a more stable yield estimate.
+</Tip>
+
+## Coverage
+
+One integration gives you data across 1,000+ vaults, 80+ protocols, and 20+ chains. For the full list of supported protocols and networks, see [Supported Protocols and Networks](/concepts/supported-protocols).

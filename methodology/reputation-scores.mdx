@@ -1,0 +1,73 @@
+---
+title: "Vault Reputation Scores: Risk Filtering Guide"
+description: "Learn how Vaults.fyi Reputation Scores work, what five dimensions they measure, and how to use minVaultScore to filter vaults programmatically."
+sidebarTitle: "Reputation Scores"
+---
+
+The Vaults.fyi Reputation Score is a proprietary metric that gives you a single, objective number to assess how battle-tested a vault is. It is not a comprehensive risk rating — it is a signal about how long a protocol has secured significant capital, and how well the underlying assets and blockchain have held up over time.
+
+## What reputation scores measure
+
+The score favors protocols that are "Lindy" — the longer a protocol has secured large amounts of capital without incident, the higher it scores. A low Reputation Score does not mean a vault is unsafe; it means the vault has not yet accumulated the track record that the score rewards.
+
+<Info>
+  Reputation Scores complement — but do not replace — detailed risk reviews from auditors and risk managers like LlamaRisk, Chaos Labs, and Gauntlet. Use scores for programmatic filtering; use risk reports for deeper due diligence.
+</Info>
+
+## Scoring dimensions
+
+Vaults.fyi breaks the Reputation Score into five weighted dimensions:
+
+<AccordionGroup>
+  <Accordion title="Protocol integrity (40%)">
+    Measures the scale of trust a protocol has earned over its operational history. The score captures how much TVL the protocol has secured and for how long, using logarithmic scaling to prevent a handful of massive protocols from dominating. A protocol with $500M TVL sustained for two years scores significantly better than one that briefly touched the same TVL for a week.
+  </Accordion>
+  <Accordion title="Pool diagnostics (20%)">
+    Accounts for liquidity characteristics at the individual pool level, not just the protocol level. A large protocol can host pools with very different liquidity profiles — for example, Aave v3 USDT on mainnet ($5B TVL) behaves differently from Aave v3 pyUSD on mainnet ($12M TVL). This dimension scores each pool individually using the same TVL-over-time approach as the protocol integrity component.
+  </Accordion>
+  <Accordion title="Community adoption (15%)">
+    Measures holder distribution and diversity. More unique holders indicate broader trust and reduce concentration risk. Future improvements to this dimension will include filtering low-value addresses, distinguishing individual holders from protocol-owned positions, and analyzing the ability of large holders to exit and affect liquidity.
+  </Accordion>
+  <Accordion title="Underlying asset reliability (12.5%)">
+    Evaluates the stability and creditworthiness of the vault's deposit asset. For stablecoins and pegged assets (ETH/BTC derivatives), this dimension measures historical price stability relative to the peg, plus/minus 2% liquidity depth in on-chain markets, and CEX and DEX trading volume. Assets with a consistent peg and deep liquidity score higher.
+  </Accordion>
+  <Accordion title="Underlying blockchain security (12.5%)">
+    Assesses the maturity and security of the network the vault runs on. For Ethereum L2s, Vaults.fyi uses the [L2Beat Stages framework](https://l2beat.com/scaling/summary) as input. For alt-L1s like Polygon and Gnosis, the score is set at the equivalent of a Stage 0 L2. Mainnet Ethereum scores highest by default.
+  </Accordion>
+</AccordionGroup>
+
+## Interpreting scores
+
+Higher scores indicate a longer track record securing significant capital on a well-established chain with a stable underlying asset. A high score does not guarantee safety — it means the vault has passed more of the tests that time imposes.
+
+<Warning>
+  Reputation Scores do not incorporate smart contract audit results, governance risk, or nuanced risk assessments of protocol architecture. Do not use them as a substitute for security research.
+</Warning>
+
+## Using scores to filter vaults
+
+You can filter the detailed-vaults API response to only return vaults above a minimum score threshold using the `minVaultScore` query parameter:
+
+```
+GET /v2/detailed-vaults?minVaultScore=60
+```
+
+This is useful when building integrations where you want to surface only established vaults to end users, without needing to maintain your own allowlist.
+
+<Tip>
+  Set `minVaultScore` to match your product's risk tolerance. Consumer wallets typically want higher thresholds (70+). Yield aggregators serving sophisticated users may set lower thresholds to capture emerging opportunities.
+</Tip>
+
+Reputation Scores are also visible in the Vaults.fyi app at [app.vaults.fyi](https://app.vaults.fyi/) and returned in every response from the [detailed vaults endpoint](/api/detailed-vaults).
+
+## Known limitations
+
+<Note>
+  The score is objective and formula-driven, which means it has edges. A genuinely risky protocol with a long history can score well. A well-audited new protocol will score low until it builds a track record. Keep these limitations in mind when making risk decisions.
+</Note>
+
+- The score does not account for governance risk, upgrade mechanisms, or admin key exposure.
+- Networks not rated by L2Beat may not have blockchain security scores.
+- Smart contract audit status is not currently a direct input to the score.
+
+For a deeper explanation of the methodology and the thinking behind the Lindy-based approach, read the [Vaults.fyi reputation score blog post](https://blog.vaults.fyi/beyond-apy-the-vaultsfyi-reputation/).

@@ -1,0 +1,82 @@
+---
+title: "Non-Custodial Transaction Preparation for DeFi Vaults"
+description: "Generate ready-to-sign deposit, redeem, and claim payloads for hundreds of vaults without intermediary contracts or custodial risk."
+sidebarTitle: "Transactions"
+---
+
+The Vaults.fyi transaction API lets you integrate vault interactions — deposits, redemptions, and reward claims — across hundreds of protocols without writing any protocol-specific contract logic. You get back ready-to-sign transaction payloads that users submit directly to the protocol. No intermediary smart contracts sit between your users and their funds.
+
+## Supported actions
+
+The API supports the following vault interaction types:
+
+| Action | Description |
+|---|---|
+| `deposit` | Move tokens into a vault to start earning yield |
+| `redeem` | Withdraw tokens from a vault in a single step (for instant-redeem vaults) |
+| `request-redeem` | Submit a withdrawal request for vaults with a queue or delay |
+| `claim-redeem` | Claim tokens after a withdrawal request has been fulfilled |
+| `claim-rewards` | Collect accrued reward tokens from a vault or across multiple vaults |
+
+<Note>
+Not all vaults support every action. Use the transaction context endpoint to check which actions are available for a specific vault and user before rendering UI controls.
+</Note>
+
+## How transaction preparation works
+
+<Steps>
+  <Step title="Fetch transaction context">
+    Call `GET /v2/transactions/context/` with the vault address, network, and user wallet address. The response tells you which actions are available, the user's current position and balances, and any claimable rewards.
+  </Step>
+  <Step title="Generate a transaction payload">
+    Call `GET /v2/transactions/{action}/` with the action you want to prepare (e.g., `deposit`), the vault, the amount, and the user address. The API returns a fully formed transaction payload — including calldata, to-address, and value — ready to be signed.
+  </Step>
+  <Step title="Present the transaction to the user">
+    Pass the payload to your wallet integration (e.g., `eth_sendTransaction` for EOA wallets, or a UserOperation for ERC-4337 smart wallets). The user signs and submits directly to the protocol.
+  </Step>
+  <Step title="Confirm and update state">
+    After the transaction is confirmed on-chain, re-fetch the transaction context or portfolio endpoints to reflect the updated position in your UI.
+  </Step>
+</Steps>
+
+## EOA and smart wallet support
+
+The API works with both externally owned accounts (EOA) and ERC-4337 compatible smart contract wallets.
+
+<Tabs>
+  <Tab title="EOA wallets">
+    For standard wallets (e.g., MetaMask, Coinbase Wallet), the API returns a single transaction object. Pass it directly to your wallet library and prompt the user to sign.
+
+    The user's transaction goes straight to the protocol contract — no proxy or intermediary contract is involved.
+  </Tab>
+  <Tab title="Smart contract wallets">
+    For ERC-4337 wallets, the API returns a payload formatted as a UserOperation. Submit it to your bundler of choice.
+
+    As with EOA wallets, the operation targets the protocol contract directly. No additional contract layers are introduced.
+  </Tab>
+</Tabs>
+
+## Key properties
+
+<CardGroup cols={2}>
+  <Card title="Non-custodial" icon="lock">
+    Users transact directly with protocol smart contracts. Vaults.fyi never holds or controls user funds.
+  </Card>
+  <Card title="No extra contracts" icon="shield-check">
+    The API prepares calldata for the protocol's own contracts. No proxy or aggregator contracts are inserted.
+  </Card>
+  <Card title="Multi-vault rewards" icon="coins">
+    The rewards endpoint discovers claimable rewards across all supported vaults for an address and generates batched claim payloads.
+  </Card>
+  <Card title="Monetization ready" icon="circle-dollar-sign">
+    Optionally embed a fee into transaction payloads to generate revenue when users transact through your integration.
+  </Card>
+</CardGroup>
+
+<Warning>
+Always call the transaction context endpoint before generating a payload. Attempting to prepare a transaction for an unsupported action or insufficient balance will return an error.
+</Warning>
+
+## API reference
+
+See the full endpoint reference at [/api/transactions](/api/transactions), or explore the live spec at `https://api.vaults.fyi/v2/documentation/`.

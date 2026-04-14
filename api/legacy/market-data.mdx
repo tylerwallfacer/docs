@@ -1,0 +1,482 @@
+---
+title: "v1 Market Data Endpoints for DeFi Vaults"
+description: "Query real-time and historical APY and TVL data for DeFi vaults across Aave, Morpho, Compound, and more using the Vaults.fyi v1 market data API."
+sidebarTitle: "Market Data"
+---
+
+The v1 market data endpoints give you access to real-time and historical APY and TVL data across leading lending and staking vaults. You can query the full vault catalog, drill into a single vault, fetch benchmark rates, or pull time-series data for charting and backtesting.
+
+<Warning>
+  These are legacy v1 endpoints. They are fully supported and maintained. For new integrations, consider using the [v2 endpoints](/api/general).
+
+</Warning>
+
+---
+
+## Get data for multiple vaults
+
+```http
+GET https://api.vaults.fyi/v1/detailed/vaults
+```
+
+Returns a paginated list of vaults with detailed APY, TVL, token, and scoring information. Use query parameters to filter by network, token, TVL range, or transactional support.
+
+**Authentication:** `x-api-key` header required.
+
+### Query parameters
+
+<ParamField query="page" type="integer" default="0">
+  Page number.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="10">
+  Number of results per page. Maximum: `250`.
+</ParamField>
+
+<ParamField query="tags" type="string[]">
+  Filter by tags. All specified tags must be present on the vault.
+</ParamField>
+
+<ParamField query="token" type="string">
+  Filter by token name or symbol.
+</ParamField>
+
+<ParamField query="network" type="string">
+  Filter by network name or CAIP identifier. Supported values: `mainnet`, `arbitrum`, `optimism`, `polygon`, `base`, `gnosis`, `unichain`, and their CAIP equivalents.
+</ParamField>
+
+<ParamField query="tvl_min" type="number">
+  Minimum TVL in USD.
+</ParamField>
+
+<ParamField query="tvl_max" type="number">
+  Maximum TVL in USD.
+</ParamField>
+
+<ParamField query="transactionalOnly" type="string">
+  Return only vaults with transactional endpoint support. Values: `true`, `false`.
+</ParamField>
+
+<ParamField query="transactionalFeaturedOnly" type="string">
+  Return only transactional vaults featured on app.vaults.fyi. Values: `true`, `false`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/detailed/vaults HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "next_page": 1,
+  "data": [
+    {
+      "name": "USDC Lending",
+      "address": "0xabc...123",
+      "network": "mainnet",
+      "protocol": "Aave",
+      "tvlDetails": {
+        "tvlNative": "5000000",
+        "tvlUsd": "5000000",
+        "lockedNative": "4500000",
+        "lockedUsd": "4500000",
+        "liquidNative": "500000",
+        "liquidUsd": "500000"
+      },
+      "numberOfHolders": 1204,
+      "apy": {
+        "base": { "1day": 450, "7day": 420, "30day": 410 },
+        "rewards": { "1day": 50, "7day": 48, "30day": 45 },
+        "total": { "1day": 500, "7day": 468, "30day": 455 }
+      },
+      "isTransactional": true
+    }
+  ]
+}
+```
+
+<Note>
+  APY values are expressed in basis points (BPS). Divide by 100 to get a percentage.
+</Note>
+
+---
+
+## Get data on a single vault
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/
+```
+
+Returns full detail for a specific vault including TVL breakdown, APY windows, top holders, rewards, and scoring.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier. E.g. `mainnet`, `arbitrum`, `base`.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/vaults/mainnet/0xabc...123/ HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+---
+
+## Get APY on a single vault
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/apy
+```
+
+Returns the current base APY, rewards APY, and total APY for a vault at a specified averaging interval.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="interval" type="string" required>
+  APY averaging window. Possible values: `1day`, `7day`, `30day`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/vaults/mainnet/0xabc...123/apy?interval=7day HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "base": 420,
+  "rewards": 48,
+  "total": 468
+}
+```
+
+---
+
+## Get benchmark rates
+
+```http
+GET https://api.vaults.fyi/v1/benchmarks
+```
+
+Returns the Vaults.fyi TVL-weighted benchmark yield for stablecoins (USD) and ETH, calculated across leading DeFi pools.
+
+**Authentication:** `x-api-key` header required.
+
+### Example request
+
+```http
+GET /v1/benchmarks HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+### Example response
+
+```json
+{
+  "usd": {
+    "name": "vaults.fyi USD Benchmark",
+    "apy": {
+      "1day": 480,
+      "7day": 460,
+      "30day": 450
+    },
+    "vaults": [
+      {
+        "name": "USDC Lending",
+        "network": "mainnet",
+        "address": "0xabc...123"
+      }
+    ]
+  },
+  "eth": {
+    "name": "vaults.fyi ETH Benchmark",
+    "apy": {
+      "1day": 310,
+      "7day": 305,
+      "30day": 300
+    },
+    "vaults": [
+      {
+        "name": "stETH",
+        "network": "mainnet",
+        "address": "0xdef...456"
+      }
+    ]
+  }
+}
+```
+
+<Note>
+  See the [methodology docs](/methodology/benchmark-rates) for details on how benchmark rates are calculated.
+</Note>
+
+---
+
+## Historical data endpoints
+
+Historical endpoints are available on Pro-level plans and are useful for building APY and TVL charts or backtesting strategies.
+
+### Get historical APY and TVL over a timestamp range
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/historical-data
+```
+
+Returns paginated time-series APY and TVL data for a vault between two timestamps.
+
+**Authentication:** `x-api-key` header required.
+
+#### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+#### Query parameters
+
+<ParamField query="from_timestamp" type="integer">
+  Start of the range in epoch seconds.
+</ParamField>
+
+<ParamField query="to_timestamp" type="integer">
+  End of the range in epoch seconds.
+</ParamField>
+
+<ParamField query="interval" type="string" default="7day">
+  APY averaging window. Possible values: `1day`, `7day`, `30day`.
+</ParamField>
+
+<ParamField query="granularity" type="integer" default="86400">
+  Time between returned data points, in seconds.
+</ParamField>
+
+<ParamField query="page" type="integer" default="0">
+  Page number.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="10">
+  Results per page. Maximum: `50`.
+</ParamField>
+
+#### Example response
+
+```json
+{
+  "next_page": 1,
+  "data": [
+    {
+      "timestamp": 1700000000,
+      "blockNumber": 18500000,
+      "apy": {
+        "base": 400,
+        "rewards": 40,
+        "total": 440
+      },
+      "tvlDetails": {
+        "tvlNative": "4800000",
+        "tvlUsd": "4800000",
+        "lockedNative": "4300000",
+        "lockedUsd": "4300000",
+        "liquidNative": "500000",
+        "liquidUsd": "500000"
+      }
+    }
+  ]
+}
+```
+
+---
+
+### Get historical APY over a timestamp range
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/historical-apy
+```
+
+Returns APY-only time-series data over a timestamp range.
+
+**Authentication:** `x-api-key` header required.
+
+#### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+#### Query parameters
+
+<ParamField query="interval" type="string" required>
+  APY averaging window. Possible values: `1day`, `7day`, `30day`.
+</ParamField>
+
+<ParamField query="from_timestamp" type="integer" required>
+  Start of the range in epoch seconds.
+</ParamField>
+
+<ParamField query="to_timestamp" type="integer" required>
+  End of the range in epoch seconds.
+</ParamField>
+
+<ParamField query="granularity" type="integer" required>
+  Time between returned data points, in seconds.
+</ParamField>
+
+<ParamField query="page" type="integer" default="0">
+  Page number.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="10">
+  Results per page. Maximum: `50`.
+</ParamField>
+
+#### Example request
+
+```http
+GET /v1/vaults/mainnet/0xabc...123/historical-apy?interval=7day&from_timestamp=1700000000&to_timestamp=1702592000&granularity=86400 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+#### Example response
+
+```json
+{
+  "next_page": 1,
+  "data": [
+    {
+      "timestamp": 1700000000,
+      "blockNumber": 18500000,
+      "apy": {
+        "base": 400,
+        "rewards": 40,
+        "total": 440
+      }
+    }
+  ]
+}
+```
+
+---
+
+### Get historical APY at a single timestamp
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/historical-apy/{timestamp}
+```
+
+Returns the APY for a vault at the block closest to the given timestamp.
+
+**Authentication:** `x-api-key` header required.
+
+#### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField path="timestamp" type="integer" required>
+  Epoch timestamp in seconds.
+</ParamField>
+
+#### Query parameters
+
+<ParamField query="interval" type="string" required>
+  APY averaging window. Possible values: `1day`, `7day`, `30day`.
+</ParamField>
+
+#### Example response
+
+```json
+{
+  "timestamp": 1700000000,
+  "blockNumber": 18500000,
+  "apy": {
+    "base": 400,
+    "rewards": 40,
+    "total": 440
+  }
+}
+```
+
+---
+
+### Get historical TVL at a single timestamp
+
+```http
+GET https://api.vaults.fyi/v1/vaults/{network}/{vaultAddress}/historical-tvl/{timestamp}
+```
+
+Returns the TVL breakdown for a vault at the block closest to the given timestamp.
+
+**Authentication:** `x-api-key` header required.
+
+#### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier.
+</ParamField>
+
+<ParamField path="vaultAddress" type="string" required>
+  Vault contract address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+<ParamField path="timestamp" type="integer" required>
+  Epoch timestamp in seconds.
+</ParamField>
+
+#### Example request
+
+```http
+GET /v1/vaults/mainnet/0xabc...123/historical-tvl/1700000000 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```

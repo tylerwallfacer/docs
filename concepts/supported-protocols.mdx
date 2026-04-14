@@ -1,0 +1,114 @@
+---
+title: "Supported DeFi Protocols and Networks on Vaults.fyi"
+description: "Vaults.fyi covers 80+ DeFi protocols on 20+ networks including Aave, Morpho, Lido, and Yearn. Learn about analytics vs. transactional support tiers."
+sidebarTitle: "Supported Protocols"
+---
+
+Vaults.fyi covers over 80 DeFi protocols across more than 20 networks. For each supported protocol, you get standardized market data — APY, TVL, fees, and reputation scores — through the same API endpoints, regardless of how each protocol is implemented under the hood.
+
+## Analytics vs. transactional support
+
+Not all protocols have the same level of integration. Coverage falls into two tiers:
+
+<CardGroup cols={2}>
+  <Card title="Analytics support" icon="chart-bar">
+    Market data is available: APY, TVL, fees, historical rates, and reputation scores. You can query and display vault data but cannot prepare transaction payloads.
+  </Card>
+
+  <Card title="Transactional support" icon="arrow-right-arrow-left">
+    Full integration: market data plus ready-to-sign deposit, redeem, and claim transaction payloads. Users can interact with the vault directly through your app.
+  </Card>
+</CardGroup>
+
+<Info>
+  To check whether a specific vault supports transactions, call `GET /v2/transactions/context/` for that vault. If transactional actions are unavailable, the response will indicate which steps are supported.
+</Info>
+
+## Key protocols
+
+The following protocols are among the most widely used on Vaults.fyi:
+
+- **Aave** — the largest decentralized lending protocol, available across multiple networks
+- **Morpho** — modular lending built on top of Aave and Compound
+- **Euler** — permissionless lending vaults with flexible risk parameters
+- **Spark** — MakerDAO's lending and savings layer
+- **Lido** — liquid staking for ETH with broad DeFi integrations
+- **Compound** — one of the original on-chain money markets
+- **Yearn** — automated yield aggregation with multi-strategy vaults
+
+These protocols represent a cross-section of the 80\+ covered. For the authoritative list, query `GET /v2/protocols` directly.
+
+## Full protocol list
+
+The following protocols are supported as of April 2026:
+
+<AccordionGroup>
+  <Accordion title="View all 80+ supported protocols">
+    40acres, Aave, Aera, Ajna, Angle, Ankr, APYx, Arcadia, Avantis, Avon, Backed, Beefy, Cap, Centrifuge, Coinbase cbETH, Compound, Concrete, Convex, Dolomite, Ember, Ethena, Ether.Fi, Ethx, Euler, Extrafi, Fluid, Frax, Gearbox, Harvest Finance, Hop, Hyperbeat, Hyperlend, Infinifi, Inverse Finance, IPOR, Kelp, Lagoon, Level, Lido, ListaDAO, Maker, Matrixdock, Mellow, Midas, Moonwell, Morpho, Mountain, Nashpoint, Notional, Ondo, Open Eden, OpenCover, Origin, Overnight Finance, Reservoir, Resolv, Revert.Finance, Rocket Pool, Seamless, Silo, Sky, Spark, Stader Ethx, Stakewise, Stargate, Summer.Fi, Superform, Swell, Syrup, Term, Tokemak, Tydro, Ultrayield, Upshift Finance, Veda, Venus, Wildcat, Yearn, Yearn yEth, Yo
+  </Accordion>
+</AccordionGroup>
+
+## Supported networks
+
+Vaults.fyi currently supports the following networks:
+
+<AccordionGroup>
+  <Accordion title="View all 20+ supported networks">
+    Ethereum Mainnet
+
+    Arbitrum
+
+    Base
+
+    Optimism
+
+    Polygon
+
+    Avalanche
+
+    Berachain
+
+    Binance Smart Chain (BSC)
+
+    Celo
+
+    Etherlink
+
+    Gnosis
+
+    Hyperliquid
+
+    Ink
+
+    Katana
+
+    Linea
+
+    Mega-ETH
+
+    Monad
+
+    Plasma
+
+    Swellchain
+
+    Unichain
+
+    Worldchain
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  Query `GET /v2/networks` to get the live list of supported networks with their chain IDs. Use the chain IDs when filtering vault queries by network.
+</Tip>
+
+## How coverage expands
+
+Vaults.fyi continuously adds new protocols and networks. When a new protocol launches or reaches meaningful TVL, it goes through a review and integration process before appearing in the API.
+
+To check the current state of any protocol or network programmatically, use the reference endpoints:
+
+- `GET /v2/protocols` — returns protocol names, products, and versions
+- `GET /v2/networks` — returns supported networks with chain IDs
+
+These endpoints always reflect the live state of the API, so they are more reliable than any static list.

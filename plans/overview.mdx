@@ -1,0 +1,83 @@
+---
+title: "Vaults.fyi API Plans & Pricing Overview"
+description: "Compare Analyst, Growth, Builder, and Enterprise API plans — pricing, credit allowances, rate limits, and features to find the right fit."
+sidebarTitle: "Plans Overview"
+---
+
+The vaults.fyi API offers four plans designed to match different usage levels, from individual analysts to enterprise-scale applications. All paid plans include priority support with under-24-hour SLAs, and subscriptions are measured in [Credits (Compute Units)](/plans/credits) that reflect the actual compute cost of each request.
+
+## Plan Comparison
+
+| Feature | Analyst | Growth | Builder | Enterprise |
+|---|---|---|---|---|
+| **Price** | $399 / mo | $599 / mo | $999 / mo | Custom |
+| **Credits** | 250k / mo | 500k / mo | 1M / mo | Custom |
+| **Rate Limits** | 10 req/s | 20 req/s | 50 req/s | Custom |
+| **Market data** | ✓ | ✓ | ✓ | ✓ |
+| **Portfolio & personalized insights** | ✗ | ✓ | ✓ | ✓ |
+| **Transactional support** | ✗ | ✓ | ✓ | ✓ |
+
+## Plan Details
+
+<CardGroup cols={2}>
+  <Card title="Analyst" icon="chart-line">
+    **$399 / month**
+
+    Best for researchers and data teams that need comprehensive market data across protocols and chains.
+
+    - 250,000 credits / month
+    - 10 requests per second
+    - Market data access
+    - Priority support, &lt;24 hr SLAs
+    - Standard product roadmap requests
+  </Card>
+  <Card title="Growth" icon="arrow-trend-up">
+    **$599 / month**
+
+    Best for product teams launching yield features that need personalized insights and transaction support.
+
+    - 500,000 credits / month
+    - 20 requests per second
+    - Market data, portfolio & insights, transactional support
+    - Priority support, &lt;24 hr SLAs
+    - Prioritized integrations for requested protocols
+  </Card>
+  <Card title="Builder" icon="hammer">
+    **$999 / month**
+
+    Best for scaling applications with high throughput requirements and deep protocol coverage.
+
+    - 1,000,000 credits / month
+    - 50 requests per second
+    - Market data, portfolio & insights, transactional support
+    - Priority support, &lt;24 hr SLAs
+    - Prioritized integrations for requested protocols and chains
+    - Prioritized API features
+  </Card>
+  <Card title="Enterprise" icon="building">
+    **Custom pricing**
+
+    Best for institutional teams and platforms that need dedicated support, custom SLAs, and bespoke features.
+
+    - Custom credit volume
+    - Custom rate limits
+    - All feature categories
+    - Dedicated support, &lt;24 hr SLAs, on-call for critical issues
+    - Prioritized integrations, API features, and custom feature development
+    - [Chat with us](https://cal.com/vaultsfyi/) to discuss
+  </Card>
+</CardGroup>
+
+## Subscribe or Upgrade
+
+To subscribe to a paid plan or upgrade your existing plan, [fill out the subscription form](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus). For Enterprise inquiries, [schedule a call](https://cal.com/vaultsfyi/) with the team.
+
+<Note>
+  **Using AI agents or building agentic workflows?** The vaults.fyi API also supports pay-per-request access via [x402](/ai-agents/x402), a micropayment protocol for AI agents. This lets autonomous systems call the API without a fixed monthly subscription — paying only for the requests they make.
+</Note>
+
+## Understanding Credits
+
+Subscriptions are measured in Credits (Compute Units), which reflect the resources required to fulfill each type of request. Lightweight endpoints like `/v2/assets` cost 1 CU per call, while data-heavy endpoints return multiple datapoints and cost more per response.
+
+See the full breakdown of endpoint credit costs on the [Credits](/plans/credits) page.

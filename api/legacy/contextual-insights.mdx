@@ -1,0 +1,278 @@
+---
+title: "v1 Contextual Insights: Wallet-Based Yield Options"
+description: "Surface personalized DeFi yield opportunities for a wallet address, filtered by holdings and preferences, using the Vaults.fyi v1 contextual insights API."
+sidebarTitle: "Contextual Insights"
+---
+
+The v1 contextual insights endpoints surface yield opportunities that are relevant to a specific wallet. Rather than showing every available vault, they examine the wallet's token holdings and return the best matching options based on the assets it already holds. You can filter by network, protocol, minimum TVL, minimum APY, and more.
+
+<Warning>
+  These are legacy v1 endpoints. They are fully supported and maintained. For new integrations, consider using the [v2 endpoints](/api/general).
+</Warning>
+
+---
+
+## Get top vault options for an address
+
+```http
+POST https://api.vaults.fyi/v1/portfolio/best-deposit-options/{userAddress}
+```
+
+Given a wallet address and a set of filter preferences, returns a ranked list of vault options for the assets the wallet holds. Up to `maxVaultsPerAsset` options are returned per asset.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="userAddress" type="string" required>
+  Wallet address to find options for. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Request body
+
+<ParamField body="apyInterval" type="string" default="7day">
+  APY averaging window. Possible values: `1day`, `7day`, `30day`.
+</ParamField>
+
+<ParamField body="allowedNetworks" type="string[]" default='["base","mainnet","arbitrum","polygon"]'>
+  Networks to include, specified by name or CAIP identifier.
+</ParamField>
+
+<ParamField body="disallowedNetworks" type="string[]">
+  Networks to exclude, specified by name or CAIP identifier.
+</ParamField>
+
+<ParamField body="allowedAssets" type="string[]">
+  Assets to include, specified by symbol or ticker (e.g. `["USDC", "ETH"]`).
+</ParamField>
+
+<ParamField body="disallowedAssets" type="string[]">
+  Assets to exclude, specified by symbol or ticker.
+</ParamField>
+
+<ParamField body="allowedProtocols" type="string[]">
+  Protocols to include, specified by name (e.g. `["Aave", "Morpho"]`).
+</ParamField>
+
+<ParamField body="disallowedProtocols" type="string[]">
+  Protocols to exclude, specified by name.
+</ParamField>
+
+<ParamField body="minimumBalanceThreshold" type="number" default="1">
+  Minimum USD balance for an asset to be included in results.
+</ParamField>
+
+<ParamField body="minimumVaultTvl" type="number" default="100000">
+  Minimum vault TVL in USD.
+</ParamField>
+
+<ParamField body="maxVaultsPerAsset" type="integer" default="3">
+  Maximum number of vault options to return per asset. Range: 1–5.
+</ParamField>
+
+<ParamField body="minApy" type="integer">
+  Minimum vault APY in basis points.
+</ParamField>
+
+<ParamField body="transactionalOnly" type="boolean">
+  When `true`, only returns vaults with transactional endpoint support.
+</ParamField>
+
+<ParamField body="transactionalFeaturedOnly" type="boolean">
+  When `true`, only returns transactional vaults featured on app.vaults.fyi.
+</ParamField>
+
+<ParamField body="alwaysReturnAssets" type="string[]" default="[]">
+  Symbols or tickers of assets to always include in results, regardless of wallet balance.
+</ParamField>
+
+<ParamField body="distinctProtocols" type="boolean">
+  When `true`, returns only one vault per protocol for each asset.
+</ParamField>
+
+### Example request
+
+```http
+POST /v1/portfolio/best-deposit-options/0xabc...123 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Content-Type: application/json
+Accept: */*
+
+{
+  "apyInterval": "7day",
+  "allowedNetworks": ["mainnet", "base"],
+  "minimumVaultTvl": 500000,
+  "maxVaultsPerAsset": 2,
+  "transactionalOnly": true
+}
+```
+
+### Example response
+
+```json
+{
+  "requestedAddress": "0xabc...123",
+  "userBalances": [
+    {
+      "asset": {
+        "symbol": "USDC",
+        "balanceUsd": 2500.00
+      },
+      "vaults": [
+        {
+          "name": "USDC Lending",
+          "protocol": "Aave",
+          "vaultAddress": "0xdef...456",
+          "networkName": "mainnet",
+          "tvlInUsd": 5000000,
+          "apy": {
+            "base": 420,
+            "rewards": 48,
+            "total": 468
+          },
+          "isTransactional": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Get single best vault option for an address
+
+```http
+POST https://api.vaults.fyi/v1/portfolio/best-vault/{userAddress}
+```
+
+Given a wallet address and filter preferences, returns the single highest-yielding vault option for the assets the wallet holds. Useful when you want to surface one clear recommendation to a user.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="userAddress" type="string" required>
+  Wallet address to find the best option for. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Request body
+
+Accepts the same filter parameters as the [top vault options endpoint](#get-top-vault-options-for-an-address), with the exception of `maxVaultsPerAsset`, `alwaysReturnAssets`, and `distinctProtocols`.
+
+<ParamField body="apyInterval" type="string" default="7day">
+  APY averaging window. Possible values: `1day`, `7day`, `30day`.
+</ParamField>
+
+<ParamField body="allowedNetworks" type="string[]" default='["base","mainnet","arbitrum","polygon"]'>
+  Networks to include.
+</ParamField>
+
+<ParamField body="minimumVaultTvl" type="number" default="100000">
+  Minimum vault TVL in USD.
+</ParamField>
+
+<ParamField body="transactionalOnly" type="boolean">
+  When `true`, only returns vaults with transactional support.
+</ParamField>
+
+### Example request
+
+```http
+POST /v1/portfolio/best-vault/0xabc...123 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Content-Type: application/json
+Accept: */*
+
+{
+  "apyInterval": "7day",
+  "allowedNetworks": ["mainnet", "base"],
+  "minimumVaultTvl": 500000,
+  "transactionalOnly": true
+}
+```
+
+### Example response
+
+```json
+{
+  "requestedAddress": "0xabc...123",
+  "asset": {
+    "name": "USD Coin",
+    "assetAddress": "0xa0b...789",
+    "assetCaip": "eip155:1/erc20:0xa0b...789",
+    "symbol": "USDC",
+    "decimals": 6,
+    "networkName": "mainnet",
+    "networkCaip": "eip155:1",
+    "balanceNative": "2500.000000",
+    "balanceUsd": 2500.00
+  },
+  "vault": {
+    "name": "USDC Lending",
+    "protocol": {
+      "name": "Aave",
+      "product": "Lending",
+      "version": "v3",
+      "protocolLogo": "https://example.com/aave.png",
+      "protocolUrl": "https://aave.com",
+      "description": "Decentralized lending protocol"
+    },
+    "vaultAddress": "0xdef...456",
+    "vaultUrl": "https://app.aave.com/",
+    "networkName": "mainnet",
+    "networkCaip": "eip155:1",
+    "tvlInUsd": 5000000,
+    "apy": {
+      "base": 420,
+      "rewards": 48,
+      "total": 468
+    },
+    "projectedAnnualEarnings": 117.00,
+    "tags": ["stablecoin", "lending"],
+    "isTransactional": true
+  },
+  "errors": {
+    "unsupportedNetworks": [],
+    "unsupportedAssets": [],
+    "unsupportedProtocols": []
+  }
+}
+```
+
+---
+
+## Get top ETH and USD vault for an address (Etherscan integration)
+
+```http
+GET https://api.vaults.fyi/v1/top-vault/{network}/{userAddress}
+```
+
+Returns the best vault recommendation for a wallet on a specific network. This endpoint powers the **Yield Opportunity** card displayed on Etherscan wallet pages, surfacing a contextual yield suggestion inline for users browsing their transaction history.
+
+**Authentication:** `x-api-key` header required.
+
+### Path parameters
+
+<ParamField path="network" type="string" required>
+  Network name or CAIP identifier. E.g. `mainnet`, `base`, `arbitrum`.
+</ParamField>
+
+<ParamField path="userAddress" type="string" required>
+  User wallet address. Pattern: `^0x[a-fA-F0-9]{40}$`.
+</ParamField>
+
+### Example request
+
+```http
+GET /v1/top-vault/mainnet/0xabc...123 HTTP/1.1
+Host: api.vaults.fyi
+x-api-key: YOUR_API_KEY
+Accept: */*
+```
+
+<Note>
+  To see a live example of this endpoint in action, visit the [Etherscan Cards case study](/resources/case-studies).
+</Note>

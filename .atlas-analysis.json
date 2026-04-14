@@ -1,0 +1,136 @@
+{
+  "projectType": "api-service",
+  "projectName": "Vaults.fyi",
+  "projectDescription": "A unified API for DeFi yield — providing market data, transaction preparation, and portfolio intelligence across 1,000+ vaults and 80+ protocols.",
+  "theme": "luma",
+  "primaryColor": "#2c2a3c",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "introduction",
+              "use-cases/for-wallets-and-apps",
+              "use-cases/for-analysts",
+              "use-cases/for-protocols"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/market-data",
+              "concepts/transactions",
+              "concepts/portfolio",
+              "concepts/supported-protocols"
+            ]
+          },
+          {
+            "group": "SDK",
+            "pages": [
+              "sdk/quickstart",
+              "sdk/reference",
+              "sdk/tutorials/wallet-integration",
+              "sdk/tutorials/data-analytics"
+            ]
+          },
+          {
+            "group": "AI & Agents",
+            "pages": [
+              "ai-agents/overview",
+              "ai-agents/mcp-claude-desktop",
+              "ai-agents/x402"
+            ]
+          },
+          {
+            "group": "Methodology",
+            "pages": [
+              "methodology/calculating-apy",
+              "methodology/benchmark-rates",
+              "methodology/reputation-scores",
+              "methodology/indexing-onchain-data"
+            ]
+          },
+          {
+            "group": "Plans & Billing",
+            "pages": [
+              "plans/overview",
+              "plans/credits"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "resources/faq",
+              "resources/changelog",
+              "resources/case-studies"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/general",
+              "api/detailed-vaults",
+              "api/historical",
+              "api/benchmarks",
+              "api/portfolio",
+              "api/transactions"
+            ]
+          },
+          {
+            "group": "Legacy v1",
+            "pages": [
+              "api/legacy/overview",
+              "api/legacy/market-data",
+              "api/legacy/position-tracking",
+              "api/legacy/generate-payloads",
+              "api/legacy/contextual-insights"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Market data for 1,000+ DeFi vaults across 80+ protocols and 20+ chains",
+    "Non-custodial transaction preparation for deposit, redeem, and claim actions",
+    "Portfolio intelligence with idle asset detection and personalized yield recommendations",
+    "Hourly on-chain indexing with proprietary reputation scores",
+    "TypeScript and Python SDKs with full type safety",
+    "AI/agent-ready with MCP server support and x402 pay-per-request access",
+    "Benchmark rates (USD & ETH) for cross-network yield comparison",
+    "Built-in monetization with fee schemes for integrators"
+  ],
+  "publicApiSurface": [
+    "GET /v2/detailed-vaults",
+    "GET /v2/detailed-vaults/{network}/{address}",
+    "GET /v2/historical/{network}/{vaultAddress}",
+    "GET /v2/benchmarks/{network}",
+    "GET /v2/portfolio/positions/{userAddress}",
+    "GET /v2/portfolio/best-deposit-options/{userAddress}",
+    "GET /v2/portfolio/idle-assets/{userAddress}",
+    "GET /v2/transactions/context/{userAddress}/{network}/{vaultAddress}",
+    "GET /v2/transactions/{action}/{userAddress}/{network}/{vaultAddress}",
+    "GET /v2/transactions/rewards/claim/{userAddress}",
+    "GET /v2/networks",
+    "GET /v2/assets",
+    "GET /v2/protocols",
+    "GET /v2/curators",
+    "sdk.getAllVaults()",
+    "sdk.getVault()",
+    "sdk.getDepositOptions()",
+    "sdk.getPositions()",
+    "sdk.getActions()",
+    "sdk.getRewardsClaimActions()",
+    "sdk.getBenchmarks()"
+  ]
+}

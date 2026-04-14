@@ -1,0 +1,83 @@
+---
+title: "USD and ETH Benchmark Rates Explained"
+description: "Understand how Vaults.fyi constructs USD and ETH benchmark rates from top vaults by TVL, and how to use them to compare yields across networks."
+sidebarTitle: "Benchmark Rates"
+---
+
+Benchmark rates give you a consistent baseline for evaluating vault performance. Instead of comparing a vault's APY to an arbitrary number, you can compare it to what the largest, most liquid vaults in the same denomination are actually returning right now.
+
+## What benchmarks measure
+
+A benchmark represents the TVL-weighted average APY across the five largest vaults in a given denomination and network, each with at least $1M in TVL. Vaults.fyi publishes separate **USD** and **ETH** benchmarks for Ethereum mainnet and every supported L2.
+
+<Info>
+  Benchmarks use the same trailing APY calculations — 1-day, 7-day, and 30-day windows — as individual vaults. You can compare a vault's APY at any time horizon directly against the benchmark for that same window.
+</Info>
+
+## USD benchmark
+
+The USD benchmark tracks stablecoin lending yield. It is constructed from the five largest USD-denominated vaults on a given network by TVL, weighted proportionally to their TVL at the time of calculation.
+
+On Ethereum mainnet, the legacy v1 USD benchmark is built from four fixed markets:
+
+| Protocol | Market |
+|---|---|
+| Aave v3 | USDT |
+| Aave v3 | USDC |
+| MakerDAO | Savings DAI (sDAI) |
+| Compound v3 | USDC |
+
+The current v2 benchmark dynamically selects the top five vaults by TVL on each network, so the composition can change as the market evolves.
+
+<Tip>
+  Use the USD benchmark to answer the question: "Is this stablecoin vault returning more or less than the best passive yield available right now on this network?"
+</Tip>
+
+## ETH benchmark
+
+The ETH benchmark tracks ETH staking yield. It is constructed from the five largest ETH-denominated vaults on a given network by TVL, weighted proportionally to their TVL.
+
+On Ethereum mainnet, the legacy v1 ETH benchmark uses four fixed liquid staking tokens (LSTs):
+
+| Protocol | Token |
+|---|---|
+| Lido | stETH |
+| ether.fi | eETH |
+| Coinbase | cbETH |
+| Rocket Pool | rETH |
+
+As with the USD benchmark, the v2 version dynamically selects the top five ETH vaults by TVL on each supported network.
+
+<Note>
+  ETH benchmark rates reflect consensus-layer and execution-layer staking rewards. They are typically more stable than lending rates because they do not respond to short-term changes in borrow demand.
+</Note>
+
+## Comparing vaults across networks
+
+Because benchmarks are published per network, you can normalize vault comparisons across chains. A vault yielding 6% APY on Arbitrum is performing differently relative to its market than a 6% APY vault on Ethereum mainnet if the underlying benchmark rates differ.
+
+<Tip>
+  When building a yield ranking UI, display the spread between a vault's APY and the benchmark for its network and denomination. This gives users a more meaningful signal than raw APY alone.
+</Tip>
+
+## Accessing benchmark data
+
+Retrieve current and historical benchmark APYs via the API:
+
+```
+GET /v2/benchmarks/{network}
+```
+
+This endpoint returns both USD and ETH benchmarks for the specified network, including 1-day, 7-day, and 30-day trailing APYs.
+
+<AccordionGroup>
+  <Accordion title="What networks have benchmark data?">
+    Vaults.fyi publishes benchmarks for Ethereum mainnet and all supported L2s. If fewer than five vaults with at least $1M TVL exist in a given denomination on a network, the benchmark uses however many qualify — down to a minimum of one vault.
+  </Accordion>
+  <Accordion title="What is the difference between v1 and v2 benchmarks?">
+    The v1 benchmarks use a fixed set of protocols on Ethereum mainnet only and are available via the legacy endpoint and the chart explorer. The v2 benchmarks are dynamic, cover all supported networks, and are available via `GET /v2/benchmarks/{network}`. Use v2 for new integrations.
+  </Accordion>
+  <Accordion title="How often are benchmark rates updated?">
+    Benchmarks update on the same hourly cadence as vault data — Vaults.fyi indexes on-chain state every hour and recalculates all APYs and benchmarks from fresh data.
+  </Accordion>
+</AccordionGroup>

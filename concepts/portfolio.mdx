@@ -1,0 +1,73 @@
+---
+title: "Portfolio Tracking and Personalized Yield Insights"
+description: "Track user positions across protocols, detect idle assets, surface personalized deposit recommendations, and report PnL — all from one API."
+sidebarTitle: "Portfolio"
+---
+
+The Vaults.fyi portfolio API gives you a unified view of a user's DeFi yield activity across all supported protocols and networks. Instead of querying each protocol separately and normalizing the results yourself, you get aggregated position data, transaction history, and yield recommendations for any wallet address in a single integration.
+
+## Position tracking
+
+Call `GET /v2/portfolio/positions/{userAddress}` to retrieve a complete picture of a user's on-chain yield activity.
+
+The response includes:
+
+- **Balances.** Current token balances across all supported networks, including idle assets not currently earning yield.
+- **Active positions.** Each vault position with its current balance in native token and USD, unclaimed rewards, and estimated returns since deposit.
+- **Transaction history.** A chronological record of past deposit, redeem, and claim transactions for the address.
+
+<Note>
+One integration covers positions across hundreds of vaults. You don't need to write per-protocol logic to aggregate this data.
+</Note>
+
+## Idle asset detection
+
+The portfolio endpoint surfaces tokens sitting in a user's wallet that are not currently earning yield. You can use this signal to prompt users with relevant deposit opportunities — for example, showing a banner when a user holds USDC on Base with no active position.
+
+This is the same data that powers the personalized deposit recommendations described below.
+
+## Personalized deposit recommendations
+
+<CardGroup cols={2}>
+  <Card title="Best deposit options" icon="list-check" href="/api/portfolio">
+    `GET /v2/portfolio/best-deposit-options/{userAddress}` returns ranked yield opportunities that match the user's idle token holdings. Filter by network, minimum TVL, and preferred protocols.
+  </Card>
+  <Card title="Best single vault" icon="trophy" href="/api/portfolio">
+    `GET /v2/portfolio/best-vault/{userAddress}` returns the single best-fit vault for the user's current parameters — useful for a one-tap "earn" action.
+  </Card>
+</CardGroup>
+
+Recommendations are computed from the user's actual wallet holdings, so you surface only relevant opportunities. A user holding WETH on Arbitrum won't see USDC vaults on mainnet.
+
+<Tip>
+Use the `minimumTvl` and `protocols` filters on the best-deposit-options endpoint to enforce your own quality bar before showing recommendations to users.
+</Tip>
+
+## PnL and returns tracking
+
+Active position data includes estimated returns since the user entered the vault. You can use this to display:
+
+- **Yield earned to date** — show how much a user has earned in USD or native token terms.
+- **Current vs. entry APY** — highlight whether the vault's rate has changed since deposit.
+- **Unclaimed rewards** — surface pending reward balances so users know when to claim.
+
+## Example use cases
+
+<AccordionGroup>
+  <Accordion title="Yield aggregator dashboard">
+    Display a user's full DeFi yield portfolio in one view — positions across Aave, Morpho, Spark, and more — without building separate integrations for each protocol.
+  </Accordion>
+  <Accordion title="Wallet app yield surface">
+    Detect idle assets in a user's wallet and recommend the best single vault for each token. Kraken Wallet uses this pattern to surface yield opportunities directly in the app.
+  </Accordion>
+  <Accordion title="Earnings reporting">
+    Pull transaction history and returns data to generate a monthly yield report for a user, showing deposits made, yield earned, and current position value.
+  </Accordion>
+  <Accordion title="Rewards notification">
+    Periodically check unclaimed reward balances across a user's positions and trigger a notification when rewards exceed a threshold worth claiming.
+  </Accordion>
+</AccordionGroup>
+
+## API reference
+
+See the full endpoint reference at [/api/portfolio](/api/portfolio), or explore the live spec at `https://api.vaults.fyi/v2/documentation/`.

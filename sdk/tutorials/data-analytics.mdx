@@ -1,0 +1,274 @@
+---
+title: "Build DeFi Yield Analytics with Vaults.fyi"
+description: "Learn how to fetch vault data, retrieve historical APY and TVL, compare against benchmarks, and build charts or reports using the Vaults.fyi SDK."
+sidebarTitle: "Data analytics"
+---
+
+This tutorial shows you how to use the Vaults.fyi SDK to power a data analytics workflow: fetching and filtering vault listings, pulling historical time-series data, comparing APY against benchmark rates, and assembling the results into a report or chart.
+
+This pattern is useful for dashboards, research tools, protocol monitoring, and any application that needs standardized DeFi yield data across multiple protocols.
+
+<Note>
+  All code examples use the TypeScript SDK (`@vaultsfyi/sdk`). The Python SDK exposes the same functionality using snake_case method names. See the [SDK Reference](/sdk/reference) for both.
+</Note>
+
+## Initialize the client
+
+```javascript analytics.js
+import pkg from '@vaultsfyi/sdk';
+const { VaultsSdk } = pkg;
+
+const sdk = new VaultsSdk({
+  apiKey: process.env.VAULTS_FYI_API_KEY,
+});
+```
+
+---
+
+## Step 1: Fetch and filter vault listings
+
+Use `getAllVaults` to retrieve available vaults. Apply filters to narrow results by network, protocol, asset, or TVL range. Use `page` and `perPage` to paginate through large result sets.
+
+```javascript analytics.js
+async function fetchVaults() {
+  const vaults = await sdk.getAllVaults({
+    query: {
+      page: 0,
+      perPage: 100,
+      allowedNetworks: ['mainnet', 'polygon', 'arbitrum'],
+      allowedAssets: ['USDC', 'USDT', 'DAI'],
+      minTvl: 5000000,       // at least $5M TVL
+      onlyTransactional: false
+    }
+  });
+
+  return vaults;
+}
+```
+
+Each vault in the response includes its protocol name, asset, network, current APY, TVL, and whether transactional support is available. Use these fields to build filters, sort orders, or summary tables.
+
+<Tip>
+  Set `minTvl` to exclude low-liquidity vaults from analytics. Vaults with very low TVL often have volatile APY data that can skew aggregated metrics.
+</Tip>
+
+---
+
+## Step 2: Fetch historical APY and TVL data
+
+Once you have a vault of interest, use the historical data methods to pull time-series metrics. Choose between the combined endpoint or the lighter focused endpoints depending on what you need.
+
+### Fetch combined APY and TVL history
+
+```javascript analytics.js
+async function fetchVaultHistory(network, vaultAddress) {
+  // Unix timestamps for a 90-day window
+  const toTimestamp = Math.floor(Date.now() / 1000);
+  const fromTimestamp = toTimestamp - 90 * 24 * 60 * 60;
+
+  const history = await sdk.getVaultHistoricalData({
+    path: { network, vaultAddress },
+    query: {
+      page: 0,
+      perPage: 365,
+      apyInterval: '7day',   // 7-day rolling average APY
+      fromTimestamp,
+      toTimestamp
+    }
+  });
+
+  return history;
+}
+```
+
+The `apyInterval` parameter controls the smoothing window for APY values. Use `'1day'` for precise daily readings, `'7day'` for a weekly moving average, or `'30day'` for a longer-term trend line.
+
+### Fetch APY-only history
+
+Use `getVaultHistoricalApy` when you only need APY data and want a lighter API response.
+
+```javascript analytics.js
+async function fetchApyHistory(network, vaultAddress) {
+  const toTimestamp = Math.floor(Date.now() / 1000);
+  const fromTimestamp = toTimestamp - 30 * 24 * 60 * 60; // last 30 days
+
+  const apyHistory = await sdk.getVaultHistoricalApy({
+    path: { network, vaultAddress },
+    query: {
+      page: 0,
+      perPage: 100,
+      fromTimestamp,
+      toTimestamp
+    }
+  });
+
+  return apyHistory;
+}
+```
+
+### Fetch TVL-only history
+
+Use `getVaultHistoricalTvl` to track capital flow into and out of a vault over time.
+
+```javascript analytics.js
+async function fetchTvlHistory(network, vaultAddress) {
+  const toTimestamp = Math.floor(Date.now() / 1000);
+  const fromTimestamp = toTimestamp - 30 * 24 * 60 * 60;
+
+  const tvlHistory = await sdk.getVaultHistoricalTvl({
+    path: { network, vaultAddress },
+    query: {
+      page: 0,
+      perPage: 100,
+      fromTimestamp,
+      toTimestamp
+    }
+  });
+
+  return tvlHistory;
+}
+```
+
+---
+
+## Step 3: Compare against benchmark rates
+
+Benchmark rates let you put vault APY in context. Use `getBenchmarks` to retrieve the current reference rate, and `getHistoricalBenchmarks` to overlay it on your APY chart.
+
+### Fetch current benchmarks
+
+```javascript analytics.js
+async function fetchBenchmarks(network) {
+  const benchmarks = await sdk.getBenchmarks({
+    path: { network },
+    query: { code: 'usd' }   // 'usd' or 'eth'
+  });
+
+  return benchmarks;
+}
+```
+
+### Fetch historical benchmarks
+
+```javascript analytics.js
+async function fetchHistoricalBenchmarks(network) {
+  const toTimestamp = Math.floor(Date.now() / 1000);
+  const fromTimestamp = toTimestamp - 90 * 24 * 60 * 60;
+
+  const historicalBenchmarks = await sdk.getHistoricalBenchmarks({
+    path: { network },
+    query: {
+      code: 'usd',
+      page: 0,
+      perPage: 365,
+      fromTimestamp,
+      toTimestamp
+    }
+  });
+
+  return historicalBenchmarks;
+}
+```
+
+Use the benchmark series as a baseline series in your chart alongside vault APY, making it easy to see when a vault outperforms or underperforms the reference rate.
+
+---
+
+## Step 4: Assemble a vault report
+
+Combine the methods above to build a complete snapshot for a single vault. The example below fetches current data, 30-day APY history, and the benchmark comparison in parallel.
+
+```javascript analytics.js
+async function buildVaultReport(network, vaultAddress) {
+  const [vault, apyHistory, benchmarks] = await Promise.all([
+    sdk.getVault({ path: { network, vaultAddress } }),
+    sdk.getVaultHistoricalApy({
+      path: { network, vaultAddress },
+      query: {
+        page: 0,
+        perPage: 100,
+        fromTimestamp: Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60,
+        toTimestamp: Math.floor(Date.now() / 1000)
+      }
+    }),
+    sdk.getBenchmarks({
+      path: { network },
+      query: { code: 'usd' }
+    })
+  ]);
+
+  return {
+    name: vault.name,
+    protocol: vault.protocol,
+    asset: vault.asset,
+    currentApy: vault.apy,
+    tvl: vault.tvl,
+    apyHistory: apyHistory,
+    benchmarkRate: benchmarks
+  };
+}
+```
+
+<Tip>
+  Use `Promise.all` to fetch independent data in parallel. Fetching vault details, APY history, and benchmarks concurrently cuts total latency by up to two-thirds compared to sequential calls.
+</Tip>
+
+---
+
+## Step 5: Handle errors and pagination
+
+Wrap API calls in error handling and iterate over pages for large data sets.
+
+### Error handling
+
+```javascript analytics.js
+import { VaultsSdk, HttpResponseError } from '@vaultsfyi/sdk';
+
+try {
+  const vaults = await sdk.getAllVaults({ query: { page: 0, perPage: 100 } });
+} catch (error) {
+  if (error instanceof HttpResponseError) {
+    console.error(`API error ${error.message}`);
+  } else {
+    throw error;
+  }
+}
+```
+
+### Paginating through all vaults
+
+```javascript analytics.js
+async function fetchAllVaults() {
+  const allVaults = [];
+  let page = 0;
+  const perPage = 100;
+
+  while (true) {
+    const result = await sdk.getAllVaults({
+      query: { page, perPage, minTvl: 1000000 }
+    });
+
+    allVaults.push(...result);
+
+    // Stop when a page returns fewer results than requested
+    if (result.length < perPage) break;
+
+    page += 1;
+  }
+
+  return allVaults;
+}
+```
+
+---
+
+## What to build next
+
+With vault listings, historical data, and benchmarks in hand, you can:
+
+- **Render an APY chart** — plot `apyHistory` as a line series with `historicalBenchmarks` as a reference line using any charting library (Recharts, Chart.js, Observable Plot).
+- **Build a protocol leaderboard** — sort vaults by 30-day average APY or by TVL growth to identify top-performing strategies.
+- **Track historical share price** — use `getVaultHistoricalSharePrice` to calculate compounded returns over any period for a more accurate performance metric than raw APY.
+- **Export to CSV or JSON** — serialize the assembled report into a flat file for use in spreadsheets, notebooks, or downstream data pipelines.
+
+See the [SDK Reference](/sdk/reference) for the full parameter and response documentation for every method used in this tutorial.

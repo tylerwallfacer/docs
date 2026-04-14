@@ -1,0 +1,122 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Vaults.fyi",
+  "colors": {
+    "primary": "#18abff",
+    "light": "#96caff",
+    "dark": "#187ee8"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Get API Access",
+      "href": "https://vaultsfyi.fillout.com/t/tLA9t6HyAFus"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "introduction",
+              "use-cases/for-wallets-and-apps",
+              "use-cases/for-analysts",
+              "use-cases/for-protocols"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/market-data",
+              "concepts/transactions",
+              "concepts/portfolio",
+              "concepts/supported-protocols"
+            ]
+          },
+          {
+            "group": "Methodology",
+            "pages": [
+              "methodology/calculating-apy",
+              "methodology/benchmark-rates",
+              "methodology/reputation-scores",
+              "methodology/indexing-onchain-data"
+            ]
+          },
+          {
+            "group": "SDK",
+            "pages": [
+              "sdk/quickstart",
+              "sdk/reference",
+              "sdk/tutorials/wallet-integration",
+              "sdk/tutorials/data-analytics"
+            ]
+          },
+          {
+            "group": "AI & Agents",
+            "pages": [
+              "ai-agents/overview",
+              "ai-agents/mcp-claude-desktop",
+              "ai-agents/x402"
+            ]
+          },
+          {
+            "group": "Plans & Billing",
+            "pages": [
+              "plans/overview",
+              "plans/credits"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "resources/faq",
+              "resources/changelog",
+              "resources/case-studies"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "openapi": "https://api.vaults.fyi/v2/documentation/json",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "openapi": "https://api.vaults.fyi/v2/documentation/json"
+          },
+          {
+            "group": "Legacy v1",
+            "hidden": true,
+            "pages": [
+              "api/legacy/overview",
+              "api/legacy/market-data",
+              "api/legacy/position-tracking",
+              "api/legacy/generate-payloads",
+              "api/legacy/contextual-insights"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fonts": {
+    "family": "Geist"
+  },
+  "logo": {
+    "light": "/images/Logo-384px-black.png",
+    "dark": "/images/Logo-384px-white.png"
+  },
+  "appearance": {
+    "default": "system"
+  },
+  "favicon": "/images/icon_blue.png",
+  "background": {
+    "color": {
+      "light": "#FFFFFF"
+    }
+  }
+}

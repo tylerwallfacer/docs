@@ -1,0 +1,117 @@
+---
+title: "Get Started with the Vaults.fyi SDK"
+description: "Install the TypeScript or Python SDK, configure your API key, and make your first call to the Vaults.fyi yield API in under five minutes."
+sidebarTitle: "Quickstart"
+---
+
+The Vaults.fyi SDK gives you typed access to 1,000+ DeFi yield strategies across 80+ protocols. This guide walks you through installation, authentication, and your first API call.
+
+<Steps>
+  <Step title="Install the SDK">
+    Add the SDK to your project using your preferred package manager.
+
+    <CodeGroup>
+
+    ```bash npm
+    npm install @vaultsfyi/sdk
+    ```
+
+    ```bash yarn
+    yarn add @vaultsfyi/sdk
+    ```
+
+    ```bash pnpm
+    pnpm add @vaultsfyi/sdk
+    ```
+
+    ```bash bun
+    bun add @vaultsfyi/sdk
+    ```
+
+    ```bash pip
+    pip install vaultsfyi
+    ```
+
+    ```bash poetry
+    poetry add vaultsfyi
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Set your API key">
+    Export your API key as an environment variable so the SDK can authenticate your requests.
+
+    ```bash
+    export VAULTS_FYI_API_KEY="your_api_key_here"
+    ```
+
+    <Note>
+      You need an API key to use the SDK. Request one by filling out [this form](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus). Keys are typically issued within one business day.
+    </Note>
+  </Step>
+
+  <Step title="Initialize the client">
+    Import the SDK and create a client instance using your API key from the environment.
+
+    <CodeGroup>
+
+    ```javascript index.js
+    import pkg from '@vaultsfyi/sdk';
+    const { VaultsSdk } = pkg;
+
+    const vaultsFyi = new VaultsSdk({
+      apiKey: process.env.VAULTS_FYI_API_KEY,
+    });
+    ```
+
+    ```python main.py
+    import os
+    from vaultsfyi import VaultsSdk
+
+    api_key = os.getenv("VAULTS_FYI_API_KEY")
+    client = VaultsSdk(api_key=api_key)
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Make your first call">
+    Call `getDepositOptions` to fetch personalized yield opportunities for a wallet address. The response is filtered by the assets you specify.
+
+    <CodeGroup>
+
+    ```javascript index.js
+    const depositOptions = await vaultsFyi.getDepositOptions({
+      path: { userAddress: '0xdB79e7E9e1412457528e40db9fCDBe69f558777d' },
+      query: { allowedAssets: ['USDC', 'USDS'] }
+    });
+
+    console.log(depositOptions);
+    ```
+
+    ```python main.py
+    user_address = "0xdB79e7E9e1412457528e40db9fCDBe69f558777d"
+    deposit_options = client.get_deposit_options(
+        user_address,
+        allowed_assets=["USDC", "USDS"]
+    )
+
+    print(deposit_options)
+    ```
+
+    </CodeGroup>
+
+    <Tip>
+      `getDepositOptions` ranks results by APY and filters out vaults below minimum TVL thresholds. It's the fastest way to surface relevant opportunities for a specific wallet.
+    </Tip>
+  </Step>
+</Steps>
+
+## Next steps
+
+Now that your client is working, explore the full set of SDK methods or follow a tutorial for your use case.
+
+- [SDK Reference](/sdk/reference) — every method, parameter, and response type
+- [Wallet integration tutorial](/sdk/tutorials/wallet-integration) — detect idle assets, build deposit flows, and track positions
+- [Data analytics tutorial](/sdk/tutorials/data-analytics) — fetch vault data, historical APY, and benchmark comparisons

@@ -1,0 +1,283 @@
+---
+title: "Vaults.fyi API Customer Case Studies"
+description: "Read how Jumper Earn, Kraken Wallet, Gauntlet, Maple Finance, Nashpoint, and Etherscan use the Vaults.fyi API for yield discovery, analytics, and transactions."
+sidebarTitle: "Case Studies"
+---
+
+Leading teams across wallets, trading platforms, research firms, and block explorers use the vaults.fyi API to power yield discovery, personalized insights, independent data validation, and onchain transactions. The following case studies show how each team integrates the API and the outcomes they've achieved.
+
+<CardGroup cols={2}>
+  <Card title="Jumper Earn" icon="bolt">
+    Unified intent-based yield discovery and execution across chains, powered by vaults.fyi market data, transaction payloads, position tracking, and attribution.
+  </Card>
+  <Card title="Kraken Wallet" icon="wallet">
+    Personalized DeFi yield suggestions surfaced within the wallet UI, including token-level recommendations and multi-chain protocol exploration.
+  </Card>
+  <Card title="Gauntlet" icon="flask">
+    Normalized yield data integrated into quantitative research models and internal dashboards for DeFi risk analysis and protocol strategy.
+  </Card>
+  <Card title="Maple Finance" icon="landmark">
+    Real-time benchmark comparisons and independent third-party APY validation for syrupUSDC, building trust through transparent performance data.
+  </Card>
+  <Card title="Nashpoint" icon="shield-check">
+    Full frontend analytics stack powered by vaults.fyi, providing independent performance verification for institutional DeFi and RWA strategies.
+  </Card>
+  <Card title="Etherscan" icon="magnifying-glass">
+    Contextual yield opportunity cards embedded in wallet address pages, surfacing actionable DeFi insights within Ethereum's premier block explorer.
+  </Card>
+</CardGroup>
+
+Ready to build? [Contact us](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus) for a demo.
+
+---
+
+## Full Case Studies
+
+<AccordionGroup>
+  <Accordion title="Jumper Earn — Unified Cross-Chain Yield Discovery and Execution">
+    ### Overview
+
+    Jumper Earn is a personalized yield discovery and execution engine that enables users to move from idle assets to earning positions through a single, intent-based workflow.
+
+    This experience is powered in part by the vaults.fyi API, which provides standardized yield data, transaction payloads, position tracking, and attribution across DeFi. Combined with Jumper's cross-chain routing, users can discover and deposit into vaults across networks without managing complex multi-step flows.
+
+    ### The Problem: Scattered DeFi Yields
+
+    Despite DeFi's growth, yield opportunities remain fragmented across chains and protocols. Users face several sources of friction:
+
+    - **Discovery fragmentation:** Yield opportunities are spread across dozens of chains and protocols, each with different interfaces and standards.
+    - **Asset mismatch:** Users often do not hold the exact asset required by a vault, requiring swaps or bridging before depositing.
+    - **Execution complexity:** Moving from an asset on Chain A to a vault on Chain B can require multiple manual steps (approve → swap → bridge → swap → deposit).
+    - **Data staleness:** Inaccurate or delayed data can result in failed or suboptimal transactions.
+
+    These frictions reduce conversion from yield discovery to actual deposits and create significant integration overhead for applications attempting to unify the experience.
+
+    ### The Solution: A Unified Intent Engine
+
+    Jumper Earn reduces this complexity by unifying discovery, execution, and tracking into a single flow.
+
+    By integrating the vaults.fyi API, Jumper accesses standardized, real-time yield data across curated opportunities without building and maintaining protocol-specific integrations. This lets Jumper focus on routing, UX, and cross-chain execution while relying on vaults.fyi for normalized yield intelligence.
+
+    The result is an experience that moves users from any asset on any chain to a target vault through a streamlined intent-based workflow.
+
+    ### How Jumper Earn Uses the vaults.fyi API
+
+    **Market & Vault Data**
+
+    Jumper Earn uses vaults.fyi as a data layer for vault metadata and strategy descriptions, real-time and historical APY and TVL, and yield and incentive breakdowns. This standardized data enables consistent comparisons across protocols and removes the need for custom data pipelines per integration.
+
+    **Transactional Support**
+
+    For many supported vaults, vaults.fyi provides transaction payloads for token approvals, deposits, and withdrawals (including multi-step flows where the user enters a redemption queue). These payloads feed into Jumper's routing engine and transaction orchestration logic.
+
+    When execution requires more complex routing — such as cross-chain swaps or multi-step flows — Jumper routes user intents through LI.FI Composer, which bundles actions into a single execution flow.
+
+    **Position Tracking**
+
+    The vaults.fyi position endpoints help power Jumper's portfolio visibility by detecting existing vault positions, tracking deposited balances, and supporting cross-chain portfolio views. This allows Jumper to present a unified yield dashboard without integrating directly with each protocol's indexing logic.
+
+    **Adoption Tracking & Attribution**
+
+    vaults.fyi provides infrastructure for measuring vault distribution and adoption. Using vaults.fyi data and dashboards, Jumper can track inflows originating from Jumper Earn, monitor net TVL associated with the integration, and attribute deposits to specific providers (protocols or curators). This creates a shared attribution layer between integrators driving user flows and providers supplying vault strategies, with a neutral onchain-based source of truth for both sides.
+
+    ### Example User Flow
+
+    1. **Wallet Connection:** Jumper detects assets and existing positions.
+    2. **Yield Discovery:** Relevant vaults are surfaced to the user.
+    3. **Vault Selection & Execution:** The user selects a vault and confirms the action. Swaps, bridges, and deposits are orchestrated via Jumper routing using vaults.fyi payloads where applicable.
+    4. **Post-Execution Tracking:** Positions are tracked using position data from vaults.fyi and other sources.
+
+    ### Results
+
+    - **Reduced integration overhead** — access to multiple protocols through a single API removed the need for many custom integrations.
+    - **Improved conversion** — streamlined discovery-to-deposit flows reduced time-to-yield for users.
+    - **Enabled measurable distribution** — attribution and TVL tracking improved visibility for both Jumper and vault providers.
+    - **Standardized yield data** — consistent data improved comparability and user decision-making.
+  </Accordion>
+
+  <Accordion title="Kraken Wallet — Personalized DeFi Yield Inside a Self-Custody Wallet">
+    ### Overview
+
+    [Kraken Wallet](https://www.kraken.com/wallet) is a powerful, self-custody wallet built to connect users to the decentralized web safely and securely.
+
+    Through the vaults.fyi API, Kraken powers analytics, personalized yield suggestions, and portfolio tracking across multiple protocols and networks — all within the native wallet interface. This integration represents a significant step in Kraken's strategy to establish itself as a leading wallet for DeFi interactions, treating Earn opportunities as a first-class product experience.
+
+    ### How It Works
+
+    1. **Token-Level Yield Suggestions:** When users view their wallet balances and select specific assets, the vaults.fyi API surfaces relevant Earn opportunities for those tokens.
+    2. **Contextual Exploration:** The Explore tab, powered by vaults.fyi, surfaces relevant DeFi opportunities across major protocols.
+    3. **Multi-Chain Support:** The integration spans Ethereum Mainnet, Base, Optimism, Arbitrum, and Polygon, giving users a comprehensive view of DeFi opportunities across five networks.
+    4. **Curated Protocol Selection:** Users can access yields from dozens of leading protocols and find opportunities that best suit their preferences.
+
+    ### Technical Implementation
+
+    The integration leverages two core API categories:
+
+    - **Market data:** Provides comprehensive APY, TVL, and vault metadata across protocols and networks.
+    - **Portfolio & personalized insights:** Delivers tailored suggestions based on the user's existing token balances.
+
+    ### Value for Kraken Wallet
+
+    - **Enhanced User Experience:** Seamlessly integrates DeFi functionality within Kraken's native interface.
+    - **Competitive Differentiation:** Establishes Kraken Wallet as a sophisticated platform for DeFi interactions.
+    - **Reduced Development Time:** Leverages vaults.fyi's expertise rather than building analytics infrastructure from scratch.
+    - **Future-Proof Architecture:** Framework supports expansion to additional protocols and networks.
+
+    ### Value for Users
+
+    - **Personalized Insights:** Receive tailored earning suggestions based on existing holdings.
+    - **Simplified Discovery:** Find optimal yield opportunities without leaving the wallet interface.
+    - **Multi-Chain Visibility:** Access opportunities across five major networks in one place.
+    - **Trusted Information:** Rely on verified, real-time data from vaults.fyi's onchain analytics.
+
+    ### Future Roadmap
+
+    The current integration focuses on analytics and personalized insights. Planned expansions include transaction support for one- and two-click supply and withdraw directly from the Earn interface, additional network coverage, and further personalization based on user behavior.
+  </Accordion>
+
+  <Accordion title="Gauntlet — Onchain Yield Data for Quantitative DeFi Research">
+    ### Overview
+
+    [Gauntlet](https://www.gauntlet.xyz/) is a leader in creating data-driven onchain yield strategies in DeFi. The team provides applied research services for clients including Coinbase, Morpho, Uniswap, Arbitrum, and NEAR. Gauntlet's models safeguard over $42 billion in digital assets across the crypto ecosystem.
+
+    To enhance their internal research and protocol modeling efforts, Gauntlet integrated the vaults.fyi API as a data source. This gives their team access to normalized, up-to-date yield data across dozens of protocols and networks — without the overhead of maintaining bespoke indexers or reconciling disparate sources.
+
+    ### Challenge
+
+    Gauntlet's research and modeling efforts depend on high-quality onchain data. Aggregating yield data across protocols presents several challenges:
+
+    - **Data fragmentation:** Yield mechanisms differ widely across protocols (e.g., supply/borrow APRs, staking rewards, real-world asset returns), making standardized comparisons difficult.
+    - **Maintenance burden:** In-house indexers are costly to maintain and require frequent updates as protocols evolve.
+    - **Cross-chain complexity:** Coverage across multiple L1s and L2s introduces additional surface area to monitor and model.
+
+    To support research into yield risk, protocol incentives, and user behavior, Gauntlet needed a unified source of yield data that could be integrated into both quantitative models and internal dashboards.
+
+    ### Solution
+
+    By using the vaults.fyi API, Gauntlet can:
+
+    - Access normalized APY data across multiple protocols and blockchain networks.
+    - Pull historical yield trends to analyze volatility and time-based behavior.
+    - Avoid maintenance overhead, relying on a single interface for live and historical vault data.
+    - Incorporate comprehensive data into risk models without building custom data pipelines for each protocol.
+
+    This integration helps Gauntlet focus on what it does best — building simulations and strategies for the protocols and assets it covers.
+
+    ### Outcome
+
+    vaults.fyi helps Gauntlet gather DeFi data to support its business. As Gauntlet continues to push the frontier of DeFi economic modeling, vaults.fyi serves as a data partner powering this research.
+  </Accordion>
+
+  <Accordion title="Maple Finance — Independent APY Benchmarking for Institutional Asset Management">
+    ### Overview
+
+    [Maple Finance](https://maple.finance/) is a leading asset manager offering institutional products and DeFi assets that are transparent and verifiable onchain. Maple offers secured lending, structured products, and institutional staking — blending DeFi efficiency with the underwriting standards and custody solutions expected by sophisticated capital allocators.
+
+    To benchmark syrupUSDC's performance and transparently display competitive yields, Maple Finance integrated the vaults.fyi API as both a market intelligence tool and an independent, third-party data source.
+
+    ### The Challenge: Benchmarking and Building Trust
+
+    For asset managers, context matters. Users want to know how yields compare to other available opportunities, and they need to trust that the numbers are independently verified. Maple Finance faced two key challenges:
+
+    - **Competitive Benchmarking:** They needed real-time access to stablecoin yields across DeFi to measure syrupUSDC's competitiveness.
+    - **Independent Performance Validation:** Displaying an externally sourced APY helps build trust by reducing reliance on self-reported metrics.
+
+    Without a standardized, comprehensive DeFi yield dataset, Maple would have faced significant development and data sourcing hurdles.
+
+    ### The Solution
+
+    By integrating the vaults.fyi API, Maple Finance now benefits from:
+
+    - Real-time market data to benchmark syrupUSDC against leading stablecoin vaults.
+    - Third-party APY metrics from vaults.fyi to transparently display syrupUSDC performance.
+    - Historical yield tracking to analyze syrupUSDC's competitiveness over time.
+
+    The integration enabled Maple to streamline performance monitoring, eliminate manual tracking, and confidently display independent yield data to their users. Maple published yield comparisons using vaults.fyi onchain data in their [Maple Yield Performance 2024](https://maple.finance/insights/maple-yield-performance-2024) report.
+
+    ### Key Benefits
+
+    - **Instant Market Context:** Seamless comparison of syrupUSDC to competing vaults.
+    - **Independent Validation:** Builds user trust with third-party APY data.
+    - **Operational Efficiency:** No need to develop or maintain custom data infrastructure.
+    - **Faster Go-To-Market:** Integrated in days, saving significant internal resources.
+
+    ### The Emerging DeFi Standard: Transparency & Trust
+
+    By using vaults.fyi's independent yield metrics, Maple Finance enhances product transparency and reinforces its commitment to data integrity and user trust. This strategic choice aligns Maple with an emerging DeFi standard: leveraging neutral, third-party sources to validate performance.
+  </Accordion>
+
+  <Accordion title="Nashpoint — Third-Party Performance Verification for Onchain Asset Management">
+    ### Overview
+
+    [Nashpoint](http://nashpoint.fi/) is pioneering onchain asset management by creating investment vehicles that bridge DeFi and Real World Assets (RWAs). Rather than building internal analytics infrastructure, Nashpoint integrated the vaults.fyi API as a strategic decision to provide independent third-party verification of their performance claims — essential for building trust with institutional clients while saving weeks of development time.
+
+    ### The Challenge: Building Trust in Onchain Asset Management
+
+    When building investment products, asset managers face a critical trust problem: how do you prove performance claims to potential investors? Traditional finance relies on established auditing firms and regulatory oversight, but onchain asset management requires a new approach.
+
+    As Cormac Daly, Founder of Nashpoint, explained: *"Using @vaultsfyi data on our site is like saying we're audited by such and such... our APYs and data are independently verified by a third party."*
+
+    ### The Solution: Independent Performance Validation
+
+    Nashpoint uses the vaults.fyi API to power their entire analytics infrastructure, providing:
+
+    - Projected APY calculations showing weighted averages of underlying protocols.
+    - Benchmark rate comparisons for transparent performance evaluation.
+    - Independent data validation that investors can trust.
+    - Real-time performance tracking across DeFi and RWA strategies.
+
+    ### Implementation & Results
+
+    vaults.fyi APIs power Nashpoint's complete frontend analytics stack, covering APY calculations for vaults, underlying strategies, and performance metrics. The integration was completed in days rather than weeks of internal development, enabling Nashpoint to launch with professional-grade analytics from day one.
+
+    - **Instant Credibility:** Industry-standard methodology and third-party validation from launch.
+    - **Development Efficiency:** The team focused on core asset management rather than data infrastructure.
+    - **Investor Confidence:** Independent validation enhances trust with institutional clients.
+
+    ### The Credibility Factor
+
+    The third-party verification aspect creates strategic advantages for everyone involved:
+
+    **For investors:** Independent validation of performance claims builds confidence in Nashpoint's management capabilities.
+
+    **For Nashpoint:** As Cormac noted: *"It forces us to be good as managers too. Because if we're underperforming... we need to figure out if we're doing something bad, then we need to improve. By using a third-party institutional-grade analytics provider like vaults.fyi, there's no opportunity to 'play games' with displayed APY data."*
+
+    **For the industry:** Establishes a new standard for transparency in onchain asset management.
+  </Accordion>
+
+  <Accordion title="Etherscan Cards — Contextual Yield Insights Inside a Block Explorer">
+    ### Overview
+
+    [Etherscan](https://etherscan.io/) is Ethereum's premier block explorer. Etherscan has leveraged the vaults.fyi API to give users more insights into yield opportunities via the Etherscan Cards integration.
+
+    ### The Idea: Contextual Yield Insights for User Addresses
+
+    When users explore an Ethereum address on Etherscan, they're often looking to understand what that wallet holds and how it's being used. The Etherscan Cards integration surfaces what those idle assets *could* be doing.
+
+    By embedding vaults.fyi market data and transactional support, Etherscan delivers real-time DeFi yield opportunities and enables user interaction with vaults directly within the block explorer interface.
+
+    ### How It Works
+
+    1. **Detect Idle Balances:** When a user views an Ethereum wallet address, the Insights API checks for idle balances in ETH and stablecoins (USDC, USDT, and DAI).
+    2. **Find Relevant Yield Opportunities:** Etherscan queries the Insights API to identify the top DeFi yield opportunities that match those assets, filtered by clear and trusted criteria.
+    3. **Display Vault Details:** The Yield Opportunity card appears in the Cards tab of the wallet page (for example, [vitalik.eth](https://etherscan.io/address/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045#cards)), highlighting the token type, protocol name, vault name, and estimated 7-day APY.
+    4. **Connect the User to the Vault:** Engaged users click the card to visit vaults.fyi, where they can explore detailed analytics, supply or withdraw funds in one click, track positions, and find additional opportunities.
+
+    ### Search Criteria for Yield Opportunities
+
+    To ensure only higher-signal opportunities are shown, the following criteria apply:
+
+    - Total Value Locked (TVL) must be greater than $100 million.
+    - For stablecoin vaults, only results where the underlying asset is USDC, USDT, or DAI are returned.
+
+    The vault with the highest 7-day APY found for ETH and for stablecoins is surfaced. Simple criteria ensure that users see yield options with substantial liquidity and protocol maturity.
+
+    ### API Capabilities Used
+
+    - **Market data:** Real-time, structured data on yield opportunities.
+    - **Portfolio & personalized insights:** Wallet balance data and relevant yield opportunity surfacing based on user preferences.
+    - **Transactional support:** Frictionless DeFi interactions enabling users to supply, withdraw, or manage funds directly within integrated apps.
+
+    Together, these API capabilities create a seamless, informed experience that empowers users to put their tokens to work.
+  </Accordion>
+</AccordionGroup>

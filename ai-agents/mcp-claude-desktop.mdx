@@ -1,0 +1,59 @@
+---
+title: "Connect Vaults.fyi to Claude Desktop via MCP"
+description: "Set up the Vaults.fyi MCP server with Claude Desktop on macOS to query live DeFi yield data and execute transactions directly from Claude."
+sidebarTitle: "MCP / Claude Desktop"
+---
+
+The Vaults.fyi MCP server exposes the full API as tools that Claude Desktop can call directly. Once configured, you can ask Claude to find yield opportunities, compare vaults, and prepare transactions — all backed by live onchain data.
+
+These instructions cover macOS setup.
+
+<Steps>
+  <Step title="Install Homebrew">
+    If you don't already have Homebrew installed, visit [brew.sh](https://brew.sh/) and follow the installation instructions there.
+  </Step>
+
+  <Step title="Install Node.js via Homebrew">
+    Update Homebrew and install Node.js (which includes npm):
+
+    ```bash
+    brew update
+    ```
+
+    ```bash
+    brew install node
+    ```
+  </Step>
+
+  <Step title="Configure Claude Desktop">
+    Open the Claude Desktop configuration file at:
+
+    ```
+    ~/Library/Application Support/Claude/claude_desktop_config.json
+    ```
+
+    Insert the following configuration, replacing `your-api-key` with your Vaults.fyi API key:
+
+    ```json claude_desktop_config.json
+    {
+      "mcpServers": {
+        "vaults": {
+          "command": "npx",
+          "args": ["@vaultsfyi/mcp"],
+          "env": {
+            "VAULTS_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+
+    <Note>
+      Replace `your-api-key` with a real API key. You can request access at [vaultsfyi.fillout.com/t/tLA9t6HyAFus](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus).
+    </Note>
+  </Step>
+
+  <Step title="Restart Claude Desktop">
+    Save the configuration file and restart Claude Desktop. The hammer icon at the bottom of the Claude window should display **1 MCP Tool available** (or more if you have other MCP servers configured). The Vaults.fyi server is ready to use.
+  </Step>
+</Steps>

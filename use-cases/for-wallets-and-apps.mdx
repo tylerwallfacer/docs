@@ -1,0 +1,84 @@
+---
+title: "Embed Yield in Any Wallet or Consumer App"
+description: "Add real-time yield discovery, non-custodial deposits, and customizable fee revenue to your wallet or app with a single API integration."
+sidebarTitle: "For Wallets & Apps"
+---
+
+A single Vaults.fyi integration gives your wallet or consumer app access to hundreds of audited yield vaults across 80\+ protocols and 20\+ chains. You get live market data, ready-to-sign transaction payloads, and portfolio tracking — without building protocol-specific integrations or running custodial infrastructure.
+
+## What you can build
+
+<CardGroup cols={2}>
+  <Card title="Yield discovery" icon="magnifying-glass">
+    Surface ranked vault opportunities filtered by asset, network, APY, and reputation score. Users see exactly where their idle funds can earn.
+  </Card>
+
+  <Card title="1-click deposits and withdrawals" icon="arrow-right-arrow-left">
+    Generate ready-to-sign deposit and redeem payloads for any supported vault. Transactions go directly from the user's wallet to the target protocol.
+  </Card>
+
+  <Card title="Portfolio tracking" icon="wallet">
+    Show users their current positions, accrued returns, and PnL across all yield strategies they've entered through your app.
+  </Card>
+
+  <Card title="Fee monetization" icon="circle-dollar-sign">
+    Attach flat or percentage-based fees to deposit and withdrawal transactions. Configure fee logic through the API without touching smart contracts.
+  </Card>
+</CardGroup>
+
+## How integration works
+
+<Steps>
+  <Step title="Fetch vaults">
+    Call `GET /v2/detailed-vaults` to retrieve a filtered, ranked list of vaults with APY, TVL, risk scores, and protocol metadata. Apply filters for asset, network, or minimum reputation score to match your users' needs.
+  </Step>
+  <Step title="Generate a transaction payload">
+    Call the transactions endpoint with the vault address, user wallet, and deposit amount. The API returns a ready-to-sign payload — no intermediary contracts involved.
+  </Step>
+  <Step title="Sign and submit">
+    Pass the payload to the user's wallet for signing. Your app broadcasts the transaction. The user interacts directly with the target protocol.
+  </Step>
+  <Step title="Track positions">
+    Use the portfolio endpoints to display the user's current balance in each vault, yield earned since deposit, and estimated annual return.
+  </Step>
+</Steps>
+
+## Non-custodial by design
+
+All transaction payloads route funds directly from the user's wallet to the target protocol. Vaults.fyi never holds or controls user funds. This means:
+
+- No intermediary smart contracts inflating gas costs
+- Fewer attack surfaces compared to proxy or aggregator architectures
+- Full UX control stays with your app
+
+<Note>
+  Both externally owned accounts (EOAs) and smart wallets are supported. For smart wallets, you can bundle fee transactions with the user's deposit in a single atomic operation.
+</Note>
+
+## Monetize yield integrations
+
+You can attach fees to any deposit or withdrawal routed through your app. The API supports multiple fee structures so you can design the model that fits your business.
+
+<CardGroup cols={2}>
+  <Card title="Flat fees" icon="tag">
+    Charge a fixed amount per deposit or withdrawal, regardless of transaction size.
+  </Card>
+
+  <Card title="Performance fees" icon="percent">
+    Take a percentage of yield earned over time, aligning your revenue with user outcomes.
+  </Card>
+</CardGroup>
+
+Fee logic is implemented directly in the API payload — no custom smart contract development required. For bespoke fee modules, the Vaults.fyi team works with you to design and validate the implementation.
+
+<Tip>
+  With EIP-7702, you can implement fee flows for traditional EOAs without requiring users to migrate to a smart wallet. This expands your monetization reach across all wallet types.
+</Tip>
+
+## Who's already using this
+
+[Kraken Wallet](https://www.kraken.com/wallet) uses Vaults.fyi to surface yield opportunities directly inside the wallet interface, letting users deposit into DeFi vaults with a single tap. [Jumper Earn](https://jumper.exchange/) integrates the same API to power its cross-chain yield aggregation experience.
+
+<Info>
+  [Contact us](https://vaultsfyi.fillout.com/t/tLA9t6HyAFus) to request API access and discuss fee structures for your integration.
+</Info>

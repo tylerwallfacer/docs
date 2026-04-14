@@ -1,0 +1,72 @@
+---
+title: "Vaults.fyi API Frequently Asked Questions"
+description: "Answers to common questions about yield calculations, data freshness, vault inclusion criteria, and how to request new protocols or features."
+sidebarTitle: "FAQ"
+---
+
+Find answers to the most common questions about how vaults.fyi collects data, calculates yields, and decides which vaults to include.
+
+<AccordionGroup>
+  <Accordion title="Why do yields on vaults.fyi look different from other sources?">
+    While other applications calculate interest rates using varying assumptions and methodologies, vaults.fyi standardizes yield calculations across the entire platform.
+
+    Yields are calculated as 1-day, 7-day, and 30-day trailing averages by observing changes in vault share price over each time frame. This approach provides a more accurate representation of vault performance compared to more volatile interest rates measured over shorter timeframes (such as a single block).
+
+    Data for these calculations is fetched directly from the blockchain, minimizing assumptions and reliance on external APIs.     For full details, see the [Methodology](/methodology/calculating-apy) page.
+  </Accordion>
+
+  <Accordion title="How often does data on vaults.fyi update?">
+    Data updates hourly. Onchain data is fetched once per hour.
+
+    For use cases requiring more frequent data, the [near-real-time (NRT) alpha endpoints](https://api.vaults.fyi/alpha/documentation/static/index.html#/NRT) return current vault share price, total assets, total supply, and underlying asset price outside the hourly cycle.
+  </Accordion>
+
+  <Accordion title="How does vaults.fyi get its data?">
+    Vaults.fyi uses specialized smart contracts that fetch and transform onchain data in a single function call. These contracts are deployed as static calls — temporary reads that do not write to blockchain storage and therefore incur no gas costs.
+
+    This architecture allows data from one read to feed directly into the next calculation within the same call, which is not possible with standard multi-call approaches. RPC providers including Infura, Alchemy, and Ankr are used to execute these calls. Once retrieved, the data is stored in the vaults.fyi backend database.
+
+    Learn more in the [Indexing Onchain Data](/methodology/indexing-onchain-data) methodology doc.
+  </Accordion>
+
+  <Accordion title="What causes significant fluctuations in APY?">
+    Some vaults update their earnings at irregular intervals rather than on every block. When a vault that has been accumulating yield for hours or days finally posts an update, the resulting share price jump creates a large but temporary spike in the calculated APY.
+
+    Understanding this behavior is essential for accurately interpreting APY figures on vaults.fyi.     For a detailed explanation, see [Calculating APY](/methodology/calculating-apy).
+  </Accordion>
+
+  <Accordion title="How can I stay up to date with the latest activity?">
+    Follow [@vaultsfyi](https://twitter.com/vaultsfyi) on X (formerly Twitter) for new product updates, newly added vaults, and insights on DeFi yield and TVL trends. The account also posts on Farcaster.
+
+    You can also check the [Changelog](/resources/changelog) page for a week-by-week log of API and app updates.
+  </Accordion>
+
+  <Accordion title="How do I request new vaults or features?">
+    Reach out to [@vaultsfyi](https://twitter.com/vaultsfyi) directly on X or Farcaster. The team actively monitors both channels for integration and feature requests.
+
+    If you represent a protocol and want your vault added, submit the [protocol request form](https://docs.google.com/forms/d/1nDcrKc_Mkm_9Xy0MjRd1LBPu1Y0UGt-gh02UAGpaGZE/edit). The team reviews each protocol before integrating and welcomes direct communications from protocol teams.
+  </Accordion>
+
+  <Accordion title="How are new vaults added to vaults.fyi?">
+    New vaults are added based on customer requests, with priority given to protocols with significant traction. The team started with yield opportunities for stablecoins, ETH, and liquid staking tokens across established DeFi protocols — including Aave, Compound, MakerDAO, Yearn, Lido stETH, and Rocket Pool rETH — and has since expanded coverage through user demand.
+
+    If you represent a protocol, submit the [protocol request form](https://docs.google.com/forms/d/1nDcrKc_Mkm_9Xy0MjRd1LBPu1Y0UGt-gh02UAGpaGZE/edit). The team researches each protocol before integrating.
+  </Accordion>
+
+  <Accordion title="What are the requirements for vaults to be listed on vaults.fyi?">
+    For a vault to be included, **all key data must be available onchain**. From a contract address (or set of addresses), the following fields must be extractable:
+
+    - `tvl` — total value locked in the vault, denominated in the underlying token
+    - `totalSupply` — total supply of the LP token issued by the vault (if applicable)
+    - `pricePerShare` — normally `tvl / totalSupply`, or an equivalent growth indicator if LP tokens are not used
+    - `maxDeposit` — maximum amount of tokens any user can deposit
+    - `liquidity` — amount of tokens directly available for withdrawal
+    - `asset` — address of the underlying ERC-20 token
+    - `name` — name of the vault
+    - `lpTokenAddress` — address of the LP token issued by the vault
+    - `rewardTokens` — addresses of reward tokens distributed by the vault
+    - `rewardTokenEmissionsPerSecond` — emission rate of reward tokens
+
+    Vaults that conform to the [ERC-4626](https://ethereum.org/en/developers/docs/standards/tokens/erc-4626/) standard make this data straightforward to access. For vaults that require reading data from multiple contracts through a chain of calls, the team appreciates protocol teams reaching out with instructions on how to locate the fields above.
+  </Accordion>
+</AccordionGroup>

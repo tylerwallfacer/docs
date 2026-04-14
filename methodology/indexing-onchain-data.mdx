@@ -1,0 +1,103 @@
+---
+title: "How Vaults.fyi Indexes On-Chain Vault Data"
+description: "See how Vaults.fyi reads vault share prices hourly using static smart contract calls, with no gas cost, via Infura, Alchemy, and Ankr RPC providers."
+sidebarTitle: "Indexing On-Chain Data"
+---
+
+Vaults.fyi reads vault state directly from the blockchain every hour. This direct indexing approach — rather than relying on third-party data APIs — is what gives yield figures their accuracy and independence from self-reported protocol numbers.
+
+## The indexing pipeline
+
+Each hour, Vaults.fyi executes specialized smart contracts that fetch and transform vault data in a single function call. These contracts are deployed as **static calls**: they execute transiently without writing to blockchain storage, so they cost no gas and leave no on-chain footprint.
+
+This architecture has two key advantages over standard multi-call patterns:
+
+- **Efficiency**: One result can feed the next calculation within the same call. Standard multi-call requires separate calls for each value.
+- **Accuracy**: Share prices are read at a consistent block height, so all values used in a single APY calculation come from the same chain state.
+
+Once retrieved, data is stored in the Vaults.fyi backend database for use in APY calculations and API responses.
+
+<Info>
+  Vaults.fyi uses Infura, Alchemy, and Ankr as RPC providers. Requests are distributed across providers to maximize reliability and minimize the impact of any single provider's downtime on data freshness.
+</Info>
+
+## How share price is read by vault type
+
+Different vault standards expose share price through different contract interfaces. Vaults.fyi handles each type explicitly.
+
+<AccordionGroup>
+  <Accordion title="ERC-4626 vaults">
+    ERC-4626 is the standard interface for tokenized yield-bearing vaults. Vaults.fyi calls two functions directly:
+
+    - `totalSupply()` — returns total shares outstanding
+    - `totalAssets()` — returns the total value of assets held by the vault
+
+    Share price is then `totalAssets / totalSupply`.
+  </Accordion>
+  <Accordion title="Non-ERC-4626 vaults">
+    For vaults that predate or do not implement ERC-4626, Vaults.fyi derives equivalent values from other contract functions — typically `mint`, `deposit`, `burn`, or `redeem`. These functions expose the relationship between shares and assets in their parameters or return values.
+
+    Each non-standard vault may require individual integration work. The functions listed above cover the most common cases, but some vaults have unique interfaces.
+  </Accordion>
+  <Accordion title="Liquid staking tokens (LSTs and LRTs)">
+    For LSTs such as Lido stETH and LRTs, Vaults.fyi uses `totalSupply()` and `getEthValue(totalSupply())` to determine total shares and total value respectively.
+
+    LSTs often update their earnings in periodic batches rather than continuously. When a batch posts, the share price jumps sharply, which can inflate the 1-day APY reading for that window. The 7-day and 30-day windows smooth this out — see [Calculating APY](/methodology/calculating-apy) for how irregular update intervals affect trailing averages.
+  </Accordion>
+  <Accordion title="Rebasing supply vaults">
+    Rebasing vaults, such as Aave aTokens, increase the user's token balance directly rather than increasing the share price. The share-to-value ratio is inverted compared to standard vaults.
+
+    Vaults.fyi reads these using:
+
+    - `scaledTotalSupply()` — treated as total shares
+    - `totalSupply()` — treated as total shares value
+
+    This reversal is necessary to correctly compute the share price growth that underlies APY calculations.
+  </Accordion>
+  <Accordion title="Staking mechanism vaults">
+    Some vaults, such as StakeWise, do not compound interest automatically. Users must manually harvest and redeposit rewards. Because the shares-to-value ratio does not reflect actual yield in these vaults, Vaults.fyi simulates share price using a derived formula:
+
+    ```
+    total principal value = sETH2.totalSupply()
+    total rewards value   = rETH2.totalSupply()
+    TVL                   = total principal value + total rewards value
+    share price           = 1 + rETH2.rewardPerToken()
+    totalSupply           = TVL / share price
+    ```
+
+    The `totalSupply` value produced here is a simulation — it is not read directly from the contract. This lets Vaults.fyi apply the same APY formula consistently across vault types.
+  </Accordion>
+  <Accordion title="Real world asset (RWA) vaults">
+    RWA vaults are ERC-20 tokens that represent interests in off-chain financial assets. Share price cannot be derived from on-chain balances alone — it requires oracle prices for both the RWA token and its underlying stablecoin.
+
+    Vaults.fyi uses three functions:
+
+    - `totalSupply()` — total shares
+    - `RWAOracle.price()` — price of the RWA share in USD
+    - `StablecoinOracle.price()` — price of the underlying deposit asset in USD
+
+    Total value in asset terms is then:
+
+    ```
+    total shares in USD   = total shares × RWA oracle price
+    total shares in asset = total shares in USD / stablecoin oracle price
+    total shares value    = total shares in asset
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Data freshness
+
+Vaults.fyi indexes all vaults on an hourly cadence. API responses reflect the most recent hourly snapshot. Because Vaults.fyi reads directly from chain rather than consuming third-party data feeds, yield figures are not subject to delays or data gaps introduced by intermediate data providers.
+
+<Warning>
+  APY values in API responses represent the state at the last hourly index. If a vault's on-chain state changed in the past hour — for example, due to a large deposit or an earnings update — the API will not reflect that change until the next indexing cycle completes.
+</Warning>
+
+## Why direct indexing matters
+
+Many yield aggregators source APY data from protocol APIs or front-end endpoints, which can return model-based or forward-looking rates rather than realized yields. Vaults.fyi reads raw contract state and derives all yield figures from first principles. This means:
+
+- **No dependency on protocol reporting**: Vaults.fyi does not rely on a protocol to correctly report its own APY.
+- **Consistent methodology**: Every vault uses the same trailing share price calculation, regardless of how the protocol presents its own data.
+- **Verifiability**: Any APY figure Vaults.fyi reports can be reproduced by anyone with access to an archive node and the block heights used in the calculation.
