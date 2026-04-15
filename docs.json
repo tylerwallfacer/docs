@@ -75,7 +75,18 @@
             "pages": [
               "resources/faq",
               "resources/changelog",
-              "resources/case-studies"
+              {
+                "group": "Case Studies",
+                "pages": [
+                  "resources/case-studies",
+                  "resources/case-studies/jumper-earn",
+                  "resources/case-studies/kraken-wallet",
+                  "resources/case-studies/gauntlet",
+                  "resources/case-studies/maple-finance",
+                  "resources/case-studies/nashpoint",
+                  "resources/case-studies/etherscan"
+                ]
+              }
             ]
           }
         ]
