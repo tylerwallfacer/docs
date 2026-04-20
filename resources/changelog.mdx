@@ -27,9 +27,9 @@ This page tracks all notable updates to the vaults.fyi API and application, orga
 **API**
 
 - Added **APYx**, **Aave V4** (tokenized spokes), and **Ember** as new protocol integrations.
-- New [`GET /v2/protocols`](/api/general) endpoint returns the full list of available protocols with name, product, and version. Useful for populating filter dropdowns and validating `allowedProtocols` params.
-- New `apyComposite` field on [detailed-vaults](/api/detailed-vaults) responses replaces `intrinsic`, with a richer structure: `totalApy` (compounded vault + underlying APY) and `intrinsicApy` (yield intrinsic to the underlying asset, e.g. staking yield), each with 1day / 7day / 30day intervals including base, reward, and total.
-- New `minVaultScore` filter on [detailed-vaults](/api/detailed-vaults) endpoints for filtering by vault quality score.
+- New [`GET /v2/protocols`](/api-reference/general) endpoint returns the full list of available protocols with name, product, and version. Useful for populating filter dropdowns and validating `allowedProtocols` params.
+- New `apyComposite` field on [detailed-vaults](/api-reference/detailed-vaults) responses replaces `intrinsic`, with a richer structure: `totalApy` (compounded vault + underlying APY) and `intrinsicApy` (yield intrinsic to the underlying asset, e.g. staking yield), each with 1day / 7day / 30day intervals including base, reward, and total.
+- New `minVaultScore` filter on [detailed-vaults](/api-reference/detailed-vaults) endpoints for filtering by vault quality score.
 - Shipped **auto-indexing** for new vaults — newly deployed vaults are now surfaced in the API faster.
 
 <Note>

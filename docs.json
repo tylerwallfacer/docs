@@ -104,7 +104,8 @@
               "api-reference/historical",
               "api-reference/benchmarks",
               "api-reference/portfolio",
-              "api-reference/transactions"
+              "api-reference/transactions",
+              "api-reference/nrt"
             ]
           },
           {
@@ -141,5 +142,17 @@
     "color": {
       "light": "#FFFFFF"
     }
-  }
+  },
+  "redirects": [
+    { "source": "/api/vaults.fyi-api-overview", "destination": "/api-reference/overview" },
+    { "source": "/api/vaults.fyi-api-overview/insights-api", "destination": "/api-reference/overview" },
+    { "source": "/general/faq", "destination": "/resources/faq" },
+    { "source": "/general/methodology", "destination": "/methodology/calculating-apy" },
+    { "source": "/api/general", "destination": "/api-reference/general" },
+    { "source": "/api/detailed-vaults", "destination": "/api-reference/detailed-vaults" },
+    { "source": "/api/historical", "destination": "/api-reference/historical" },
+    { "source": "/api/benchmarks", "destination": "/api-reference/benchmarks" },
+    { "source": "/api/portfolio", "destination": "/api-reference/portfolio" },
+    { "source": "/api/transactions", "destination": "/api-reference/transactions" }
+  ]
 }
