@@ -10,22 +10,13 @@ Data is indexed on-chain on an hourly basis, so you always have current metrics 
 
 ## What data is available
 
-The table below shows the key data fields returned across market data endpoints.
-
-| Field | Description |
-|---|---|
-| `apy` | Current annual percentage yield, normalized across protocols |
-| `apy1d` / `apy7d` / `apy30d` | Rolling average APY over 1, 7, and 30 days |
-| `tvl` | Total value locked in the vault, in USD |
-| `fees` | Protocol fee breakdown (management, performance, etc.) |
-| `reputationScore` | Vaults.fyi risk and reputation score for the vault |
-| `rewards` | Claimable reward tokens and estimated rates |
-| `capacity` | Maximum deposit capacity, if enforced by the protocol |
-| `flags` | Vault-level signals such as paused state or deprecation |
+Each vault object includes APY across four time windows, TVL in USD and native units, a fee breakdown, a reputation score with sub-scores, reward token rates, holder counts, capacity limits, and flags for active protocol notices — among other fields.
 
 <Note>
 APY, TVL, fees, and reputation scores are computed consistently across all protocols. This means you can safely sort and compare vaults from different protocols side by side.
 </Note>
+
+For a complete field-by-field reference covering everything the API can tell you about a vault, see [Everything You Can Know About a Vault](/concepts/vault-data).
 
 ## Endpoints
 

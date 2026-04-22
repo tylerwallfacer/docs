@@ -31,3 +31,15 @@
 
 {/* Define what should and shouldn't be documented */}
 {/* Example: Don't document internal admin features */}
+
+## Keeping docs in sync with the API
+
+The API Reference endpoint pages are auto-generated from the OpenAPI spec and update automatically on every push. No manual work needed there.
+
+The following pages are manually maintained. When making changes that add, rename, or remove API fields or endpoints, update the relevant pages below before closing the PR:
+
+- `concepts/vault-data.mdx` — complete field reference for vault objects. Update when fields change in `/v2/detailed-vaults`, `/v2/portfolio`, `/v2/historical`, or `/v2/nrt`.
+- `api-reference/general.mdx`, `detailed-vaults.mdx`, `historical.mdx`, `benchmarks.mdx`, `portfolio.mdx`, `transactions.mdx`, `nrt.mdx` — section overview pages with endpoint tables. Update if endpoint paths or summaries change.
+- `api-reference/beta.mdx` and `api-reference/alpha.mdx` — feature descriptions for pre-stable endpoints. Update when beta/alpha features graduate or change scope.
+
+The practical trigger: when you write a changelog entry for a new or changed field, update the relevant page above at the same time.
