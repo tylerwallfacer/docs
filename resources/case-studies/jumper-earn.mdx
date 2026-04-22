@@ -7,7 +7,7 @@ sidebarTitle: "Jumper Earn"
 [Jumper Earn](https://jumper.exchange/earn/) is a personalized yield discovery and execution engine that moves users from idle assets to earning positions through a single, intent-based workflow. By integrating the vaults.fyi API, Jumper accesses standardized yield data, ready-to-sign transaction payloads, position tracking, and attribution infrastructure — without maintaining protocol-specific integrations.
 
 <Frame>
-  ![Image](/images/image.png)
+  ![Jumper Screen4](/images/jumper_screen4.png)
 </Frame>
 
 ## The Problem: Fragmented Cross-Chain Yields
@@ -21,10 +21,6 @@ Despite DeFi's growth, yield opportunities remain scattered across chains and pr
 
 These frictions reduce the conversion from yield discovery to actual deposits and create substantial integration overhead for any application trying to unify the experience.
 
-<Frame>
-  ![Image](/images/image-1.png)
-</Frame>
-
 ## How Jumper Uses the vaults.fyi API
 
 ### Market and Vault Data
@@ -32,19 +28,23 @@ These frictions reduce the conversion from yield discovery to actual deposits an
 Jumper uses vaults.fyi as its data layer for vault metadata and strategy descriptions, real-time and historical APY and TVL, and yield and incentive breakdowns. This standardized coverage enables consistent comparisons across protocols and removes the need for custom data pipelines per integration.
 
 <Frame>
-  ![Image](/images/image-2.png)
+  ![Jumper Screen2](/images/jumper_screen2.png)
 </Frame>
 
 ### Transaction Payloads
 
 For supported vaults, vaults.fyi provides ready-to-sign calldata for token approvals, deposits, and withdrawals — including multi-step flows where users enter a redemption queue. These payloads feed directly into Jumper's routing engine. For cross-chain or multi-step flows, Jumper orchestrates via LI.FI Composer, bundling actions into a single user-facing confirmation.
 
+<Frame>
+  ![Jumper Screen1](/images/jumper_screen1.png)
+</Frame>
+
 ### Position Tracking
 
 vaults.fyi position endpoints power Jumper's portfolio visibility: detecting existing vault positions, tracking deposited balances, and supporting cross-chain views — without requiring direct integration with each protocol's indexing logic.
 
 <Frame>
-  ![Image](/images/image-3.png)
+  ![Jumper Screen3](/images/jumper_screen3.png)
 </Frame>
 
 ### Attribution and TVL Tracking
