@@ -6,6 +6,10 @@ sidebarTitle: "Jumper Earn"
 
 [Jumper Earn](https://jumper.exchange/earn/) is a personalized yield discovery and execution engine that moves users from idle assets to earning positions through a single, intent-based workflow. By integrating the vaults.fyi API, Jumper accesses standardized yield data, ready-to-sign transaction payloads, position tracking, and attribution infrastructure — without maintaining protocol-specific integrations.
 
+<Frame>
+  ![Image](/images/image.png)
+</Frame>
+
 ## The Problem: Fragmented Cross-Chain Yields
 
 Despite DeFi's growth, yield opportunities remain scattered across chains and protocols. Users face compounding sources of friction:
@@ -17,11 +21,19 @@ Despite DeFi's growth, yield opportunities remain scattered across chains and pr
 
 These frictions reduce the conversion from yield discovery to actual deposits and create substantial integration overhead for any application trying to unify the experience.
 
+<Frame>
+  ![Image](/images/image-1.png)
+</Frame>
+
 ## How Jumper Uses the vaults.fyi API
 
 ### Market and Vault Data
 
 Jumper uses vaults.fyi as its data layer for vault metadata and strategy descriptions, real-time and historical APY and TVL, and yield and incentive breakdowns. This standardized coverage enables consistent comparisons across protocols and removes the need for custom data pipelines per integration.
+
+<Frame>
+  ![Image](/images/image-2.png)
+</Frame>
 
 ### Transaction Payloads
 
@@ -30,6 +42,10 @@ For supported vaults, vaults.fyi provides ready-to-sign calldata for token appro
 ### Position Tracking
 
 vaults.fyi position endpoints power Jumper's portfolio visibility: detecting existing vault positions, tracking deposited balances, and supporting cross-chain views — without requiring direct integration with each protocol's indexing logic.
+
+<Frame>
+  ![Image](/images/image-3.png)
+</Frame>
 
 ### Attribution and TVL Tracking
 

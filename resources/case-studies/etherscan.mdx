@@ -4,13 +4,17 @@ description: "How Etherscan uses the vaults.fyi API to surface yield opportunity
 sidebarTitle: "Etherscan"
 ---
 
-[Etherscan](https://etherscan.io/) is Ethereum's premier block explorer. Through the vaults.fyi API, Etherscan embeds contextual yield opportunity cards inside wallet address pages — surfacing what idle assets *could* be doing, right when users are already examining their holdings.
+[Etherscan](https://etherscan.io/) is Ethereum's premier block explorer. Through the vaults.fyi API, Etherscan embeds contextual yield opportunity cards inside wallet address pages — surfacing what idle assets _could_ be doing, right when users are already examining their holdings.
 
 ## The Idea: Contextual Yield at the Point of Exploration
 
 When users look up an Ethereum address, they're trying to understand what a wallet holds and how it's being used. That intent creates a natural opening to surface yield opportunities for assets sitting idle.
 
 The Etherscan Cards integration uses vaults.fyi market data and idle-asset detection to show users relevant DeFi opportunities directly within the block explorer — without requiring them to visit a separate platform to discover yield.
+
+<Frame>
+  ![Image](/images/image-11.png)
+</Frame>
 
 ## How It Works
 
@@ -23,7 +27,7 @@ The Etherscan Cards integration uses vaults.fyi market data and idle-asset detec
 
 To ensure only high-signal opportunities are shown:
 
-- TVL must exceed **$100 million** — filtering out thin or unproven vaults.
+- TVL must exceed **\$100 million** — filtering out thin or unproven vaults.
 - Stablecoin results are limited to USDC, USDT, and DAI underlyings.
 - The vault with the highest 7-day APY for each asset type (ETH, stablecoins) is surfaced.
 
