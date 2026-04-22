@@ -7,4 +7,12 @@ description: "User positions, idle assets, deposit recommendations, transaction 
 
 Wallet-aware endpoints that return a user's vault positions, uninvested balances, personalized deposit suggestions, total returns, and transaction history.
 
-Covered here: `/v2/portfolio/positions`, `/v2/portfolio/idle-assets`, `/v2/portfolio/best-deposit-options`, `/v2/portfolio/best-vault`, `/v2/portfolio/total-returns`, `/v2/portfolio/events`.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | [/v2/portfolio/positions/\{userAddress\}](/api-reference/portfolio-pro/list-portfolio-positions) | All vault positions for a wallet |
+| `GET` | [/v2/portfolio/positions/\{userAddress\}/\{network\}/\{vaultAddress\}](/api-reference/portfolio-pro/get-portfolio-position) | Single vault position for a wallet |
+| `GET` | [/v2/portfolio/idle-assets/\{userAddress\}](/api-reference/portfolio-pro/list-idle-assets) | Uninvested token balances |
+| `GET` | [/v2/portfolio/best-deposit-options/\{userAddress\}](/api-reference/portfolio-pro/get-best-deposit-options) | Ranked deposit opportunities matching wallet holdings |
+| `GET` | [/v2/portfolio/best-vault/\{userAddress\}](/api-reference/portfolio-pro/get-best-vault) | Single best-fit vault for a wallet |
+| `GET` | [/v2/portfolio/total-returns/\{userAddress\}/\{network\}/\{vaultAddress\}](/api-reference/portfolio-pro/get-total-returns) | Earned yield for a position |
+| `GET` | [/v2/portfolio/events/\{userAddress\}/\{network\}/\{vaultAddress\}](/api-reference/portfolio-pro/list-position-events) | Deposit, redeem, and claim history |

@@ -5,4 +5,12 @@ description: "Core endpoints for vault discovery, assets, networks, protocols, a
 
 Core reference data endpoints — use these to browse available vaults, resolve asset and network metadata, and populate filter dropdowns. No PRO key required.
 
-Covered here: `/v2/health`, `/v2/vaults`, `/v2/assets`, `/v2/networks`, `/v2/tags`, `/v2/curators`, `/v2/protocols`.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | [/v2/vaults](/api-reference/general/list-vaults) | List vaults with optional filters |
+| `GET` | [/v2/assets](/api-reference/general/list-assets) | List supported assets and tokens |
+| `GET` | [/v2/networks](/api-reference/general/list-networks) | List supported networks |
+| `GET` | [/v2/tags](/api-reference/general/list-tags) | List vault tags |
+| `GET` | [/v2/curators](/api-reference/general/list-curators) | List vault curators |
+| `GET` | [/v2/protocols](/api-reference/general/list-protocols) | List supported protocols |
+| `GET` | [/v2/health](/api-reference/health/health-check) | API health check |

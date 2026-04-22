@@ -7,4 +7,10 @@ description: "Time-series APY, TVL, share price, and asset price data for any va
 
 Time-series data for any vault over configurable date ranges and granularity. Use these endpoints to build performance charts, run backtests, or track share price over time.
 
-Covered here: `/v2/historical/{network}/{vaultAddress}` and its `/apy`, `/tvl`, `/sharePrice` sub-endpoints, plus `/v2/historical/asset-prices/{network}/{assetAddress}`.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | [/v2/historical/\{network\}/\{vaultAddress\}](/api-reference/historical-pro/get-vault-historical-data) | Combined APY, TVL, and share price over a range |
+| `GET` | [/v2/historical/\{network\}/\{vaultAddress\}/apy](/api-reference/historical-pro/get-historical-apy) | APY time-series for a vault |
+| `GET` | [/v2/historical/\{network\}/\{vaultAddress\}/tvl](/api-reference/historical-pro/get-historical-tvl) | TVL time-series for a vault |
+| `GET` | [/v2/historical/\{network\}/\{vaultAddress\}/sharePrice](/api-reference/historical-pro/get-historical-share-price) | Share price time-series for a vault |
+| `GET` | [/v2/historical/asset-prices/\{network\}/\{assetAddress\}](/api-reference/historical-pro/get-historical-asset-prices) | Historical prices for an underlying asset |

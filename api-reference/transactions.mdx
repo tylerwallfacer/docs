@@ -7,4 +7,9 @@ description: "Ready-to-sign transaction payloads for deposits, redemptions, and 
 
 Generates ready-to-sign transaction calldata for any supported vault action. Pass the output directly to your wallet provider — no ABI encoding required.
 
-Covered here: `/v2/transactions/context`, `/v2/transactions/{action}`, `/v2/transactions/rewards/context`, `/v2/transactions/rewards/claim`.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | [/v2/transactions/context/\{userAddress\}/\{network\}/\{vaultAddress\}](/api-reference/transactions-pro/get-transaction-context) | Balances and limits before building a transaction |
+| `GET` | [/v2/transactions/\{action\}/\{userAddress\}/\{network\}/\{vaultAddress\}](/api-reference/transactions-pro/get-transaction-payload) | Calldata for deposit, redeem, or claim |
+| `GET` | [/v2/transactions/rewards/context/\{userAddress\}](/api-reference/transactions-pro/get-rewards-context) | Claimable rewards for a wallet |
+| `GET` | [/v2/transactions/rewards/claim/\{userAddress\}](/api-reference/transactions-pro/claim-rewards) | Calldata to claim pending rewards |

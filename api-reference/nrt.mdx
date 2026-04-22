@@ -7,4 +7,10 @@ description: "Sub-second vault metrics: share price, total assets, total supply,
 
 Near real-time vault metrics sourced directly from onchain state — updated far more frequently than the standard indexed data. Use these endpoints when your product needs the most current share price or TVL figures, such as deposit previews, live dashboards, or liquidation monitoring.
 
-Covered here: `/v2/nrt/vault/{network}/{vaultAddress}`, `/sharePrice`, `/totalSupply`, `/totalAssets`, `/underlyingAssetPrice`.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | [/v2/nrt/vault/\{network\}/\{vaultAddress\}](/api-reference/nrt-pro/get-vault-nrt-data) | All NRT metrics for a vault |
+| `GET` | [/v2/nrt/vault/\{network\}/\{vaultAddress\}/sharePrice](/api-reference/nrt-pro/get-vault-nrt-share-price) | Current share price |
+| `GET` | [/v2/nrt/vault/\{network\}/\{vaultAddress\}/totalSupply](/api-reference/nrt-pro/get-vault-nrt-total-supply) | Current total supply |
+| `GET` | [/v2/nrt/vault/\{network\}/\{vaultAddress\}/totalAssets](/api-reference/nrt-pro/get-vault-nrt-total-assets) | Current total assets |
+| `GET` | [/v2/nrt/vault/\{network\}/\{vaultAddress\}/underlyingAssetPrice](/api-reference/nrt-pro/get-vault-nrt-underlying-asset-price) | Current underlying asset price |

@@ -5,4 +5,9 @@ description: "Comprehensive vault data including APY, TVL, risk scores, fees, ho
 
 Full vault objects with performance metrics, reputation scores, fee structures, holder data, and protocol info. Use these endpoints to build vault comparison views, detail pages, or yield aggregators. No PRO key required.
 
-Covered here: `/v2/detailed-vaults`, `/v2/detailed-vaults/{network}/{vaultAddress}`, and the `/apy` and `/tvl` sub-endpoints.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | [/v2/detailed-vaults](/api-reference/detailed-vaults/list-detailed-vaults) | List vaults with full analytics |
+| `GET` | [/v2/detailed-vaults/\{network\}/\{vaultAddress\}](/api-reference/detailed-vaults/get-vault-details) | Get a single vault's full details |
+| `GET` | [/v2/detailed-vaults/\{network\}/\{vaultAddress\}/apy](/api-reference/detailed-vaults/get-vault-apy) | APY breakdown for a vault |
+| `GET` | [/v2/detailed-vaults/\{network\}/\{vaultAddress\}/tvl](/api-reference/detailed-vaults/get-vault-tvl) | TVL history for a vault |
